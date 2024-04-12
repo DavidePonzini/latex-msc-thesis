@@ -1,0 +1,31 @@
+Some providers use different notations when referring to bidding operations type.
+
+Market bids can refer either to purchases of sales.
+Each provider represents this information in its own format.
+
+As such, it is necessary to create a remapping table to normalize this notation.
+The table needs to know both the original format as well as the provider, since different providers may use the same value for different things.
+
+\begin{table}
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \toprule
+        Provider    & Original  & Remapped  \\
+        \midrule
+        Provider\_A & P         & Purchase  \\
+        Provider\_A & S         & Sell      \\
+        Provider\_B & Purchase  & Purchase  \\
+        Provider\_B & Sell      & Sell      \\
+        Provider\_C & BID       & Purchase  \\
+        Provider\_C & OFF       & Sell      \\
+        Provider\_D & C         & Purchase  \\
+        Provider\_D & V         & Sell      \\
+        \bottomrule
+    \end{tabular}
+    \caption{Bidding operation type remappings.}
+    \label{tab:dwh:remapping:op_type}
+\end{table}
+
+The resulting table is similar to table \ref{tab:dwh:remapping:op_type}.
+
+The table hasn't been materialized given its very small size (less than 10 elements).

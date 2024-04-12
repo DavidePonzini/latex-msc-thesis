@@ -1,0 +1,28 @@
+\label{section:etl}
+In this chapter we will describe the process used for extracting, transforming and loading data into the Data Warehouse.
+
+I analyzed the multiple problems encountered during the ETL development as well as the process employed by Reply.
+Most problems were however solved by Axpo specialists, since their specific knowledge was required.
+
+I also asked Reply to keep track of all the issues encountered as well as their status.
+
+This can be used both by Reply, to better organize its work, and by Axpo, to understand if a delay is due to an unexpected issue and how well Reply is performing.
+
+The resulting document can be used both as a small layer of documentation and to produce some tests for the more vulnerable parts of the ETL processes.
+
+\section{ETL Operations}
+    \input{tex/chapters/2_solution/etl/common.tex}
+    
+\section{Issues} \label{section:etl:difficulties}
+    \input{tex/chapters/2_solution/etl/difficulties.tex}
+
+\section{Examples}
+    In this section we will list a few examples to give a more hands-on idea of some of the problems encountered during development.
+    
+    \subsection{CSV Parsing}
+        \input{tex/chapters/2_solution/etl/examples/epex_spot.tex}
+    \subsection{Unpredictable File Names} \label{section:etl:terna}
+        \input{tex/chapters/2_solution/etl/examples/terna.tex}
+    \subsection{Website Navigation}
+        \input{tex/chapters/2_solution/etl/examples/damas.tex}
+    

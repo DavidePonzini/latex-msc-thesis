@@ -1,0 +1,27 @@
+\chapter{Issues} \label{section:issues}
+    During the development of the data warehouse we encountered some unexpected issues, which forced us to change our planning.\reword
+    
+    In this section we will describe the most significant issues encountered.
+    
+    \section{Common issues}
+        The issues described in this section have been commonly encountered across all sprints, and are characterized by a more organizational nature.
+        
+        \subsection{Sprint re-prioritization}
+            \input{old/chapters/issues/general/sprint_reordering.tex}
+    
+    \section{Sprint Energy price forecast EU}
+        The following issues have been encountered during, or shortly after, the first sprint for the trading department.
+        
+        \subsection{ENTSOE FTP} \label{section:issues:entsoe_ftp}
+            \input{old/chapters/issues/sprint1/entsoe_ftp.tex}
+        \subsection{Different formats for older data} \label{section:issues:older_data_formats}
+            \input{old/chapters/issues/sprint1/formats.tex}
+        \subsection{Databricks updates} \label{section:issues:databricks_updates}
+            \input{old/chapters/issues/sprint1/databricks_updates.tex}
+    
+    \section{Provider updates}
+        \todoissues{Snam update}    
+            snam websites launched a new portal for exposing data and decided not to update the data in the old portal.
+            
+            this news arrived during development of the etl from the snam website.
+            as such it was necessary to stop all dev processes on the provider, while analysing the situation and understanding if it was necessary to start again from scratch on the new portal.

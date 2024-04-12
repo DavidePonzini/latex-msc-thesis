@@ -1,0 +1,128 @@
+   
+    % \section{Facts}
+    %     \begin{itemize}
+    %         \item Block bids
+    %         \item Capacity
+    %             \begin{itemize}
+    %                 \item Capacity
+    %                 \item Capacity detail
+    %             \end{itemize}
+    %         \item Demand
+    %         \item Load
+    %         \item Price
+    %         \item Public offer
+    %         \item Transit
+    %         \item Unavailability
+    %             \begin{itemize}
+    %                 \item Unavailability
+    %                 \item Unavailability planned
+    %             \end{itemize}
+    %         \item Volumes
+    %         \item Zone unbalance
+    %             \begin{itemize}
+    %                 \item Price
+    %                     \begin{itemize}
+    %                         \item Hour
+    %                         \item Quarter
+    %                     \end{itemize}
+    %                 \item Quantity
+    %                     \begin{itemize}
+    %                         \item Hour
+    %                         \item Quarter
+    %                     \end{itemize}
+    %             \end{itemize}
+    %     \end{itemize}
+    % \section{Dimensions}
+    %     All tables have the following dimensions:
+    %         \begin{itemize}
+    %             \item Commodity
+    %             \item Provider
+    %             \item Publication
+    %             \item Hour
+    %                 \begin{itemize}
+    %                     \item Unavailability has HourFrom, HourTo
+    %                 \end{itemize}
+    %             \item Date
+    %                 \begin{itemize}
+    %                     \item Unavailability has DateFrom, DateTo
+    %                 \end{itemize}
+    %         \end{itemize}
+            
+    %     All facts except \texttt{Public offer, Volumes, Unbalance} have Country.
+        
+    %     \paragraph{Zone unbalance}
+    %         \texttt{Unbalance Qty/Price} are divided into hourly and quarterly tables.
+        
+    %         Zones are stored in \texttt{MacroZone}\footnote{Coincidono circa con le provincie, salvo per le isole}.
+    %         \begin{itemize}
+    %             \item Quantity
+    %                 \begin{itemize}
+    %                     \item Hourly has Qty exchange from/to
+    %                         \begin{itemize}
+    %                             \item Rappresentano gli scambi italiani e gli scambi con l'estero (suggerito di rinominare)
+    %                         \end{itemize}
+    %                 \end{itemize}
+    %             \item Price
+    %                 \begin{itemize}
+    %                     \item Hourly has medium price
+    %                     \item Quarterly has max/min price
+    %                     \item \textit{I dati arrivano cosi` da input}
+    %                 \end{itemize}
+    %         \end{itemize}
+        
+    %     \paragraph{Capacity} Capacity has two tables:
+    %         \begin{itemize}
+    %             \item Capacity
+    %                 \begin{itemize}
+    %                     \item Capacity for zones
+    %                 \end{itemize}
+    %             \item Capacity Detail
+    %                 \begin{itemize}
+    %                     \item Capacity for Production Unit
+    %                 \end{itemize}
+    %         \end{itemize}
+            
+    %     \paragraph{Unavailability} There are two types of unavailability:
+    %         \begin{itemize}
+    %             \item Unavailability
+    %                 \begin{itemize}
+    %                     \item Refers to zones (\textit{from ... to ...})
+    %                 \end{itemize}
+    %             \item Unavailability planned
+    %                 \begin{itemize}
+    %                     \item Refers to planned plant outages
+    %                 \end{itemize}
+    %         \end{itemize}
+            
+    % \section{Notes}
+        \paragraph{Dimensions}
+            \begin{itemize}
+                \item \todoreply{Rename TypeVolume} TypeVolume: represents if the value is FCT or ACT
+                \item Market: can be for example MGP, MI, MSD
+                \item MarketSession: is e.g. MI1, MI2, ...
+                    \begin{itemize}
+                        \item \todoreply{Discutere MarketSession dimension}Not in Market table since it changes frequently
+                            \begin{itemize}
+                                \item Come sono gestiti i cambiamenti
+                                \item Vantaggi/svantaggi di avere una tabella separata
+                            \end{itemize}
+                    \end{itemize}
+                \item \todoreply{Rename Unit} Unit: represents ProductionUnit
+                \item Hour: has separate dim table to account for DST, gas-day
+            \end{itemize}
+        \paragraph{Values}
+            \begin{itemize}
+                \item Price: prezzo domanda offerta prima accettazione
+                \item \todoreply{Rename ZonePrice} ZonePrice: prezzo accettato mgp
+            \end{itemize}
+        \paragraph{Unused values}
+            \todoreply{Campi inutilizzati}
+            \begin{itemize}
+                \item StopUpdated
+                \item HourFromCustom\footnote{input, vuote}
+                \item HourToCustom
+            \end{itemize}
+        \paragraph{Other}
+            \begin{itemize}
+                \item \todoreply{Orario tutto in ora legale?}Orario tutto in ora legale (assicurarsi che tutti gli orari inseriti nella dwh siano in ora legale, per evitare problemi futuri)
+            \end{itemize}

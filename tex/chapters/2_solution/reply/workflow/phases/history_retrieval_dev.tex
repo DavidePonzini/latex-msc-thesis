@@ -1,0 +1,10 @@
+The ETL procedure downloads data for a single day\footnote{
+    To be more precise, the process downloads data for a single time unit, i.e,. the scheduled download interval for a given stream.
+    Most streams are downloaded daily, but some have a different download frequency (varying from hourly to two or three times a day).
+} but, during the Data Warehouse initialization, it is necessary to download data up to a few years before.
+
+This process creates a wrapper for the ETL procedure, calling it several times, each time downloading data for a different day.
+The procedure is iterative, meaning that a single day will be extracted, transformed and loaded before processing the next day.
+
+Days are downloaded backwards.
+This allows to handle errors, such as file structure changes, more efficiently, since they will not affect any file downloaded up to that point.

@@ -1,0 +1,32 @@
+\documentclass{masterthesis}
+
+%%%%%%%%%% CONF %%%%%%%%%%
+\input{conf/packages.tex}
+\input{conf/colors.tex}
+\input{conf/commands.tex}
+\input{conf/setup.tex}
+\input{conf/bib.tex}
+\input{conf/title.tex}
+
+%%%%%%%%%% DOCUMENT %%%%%%%%%%
+\begin{document}
+    \maketitle
+    
+    %%%%%%%%%% TOC %%%%%%%%%%
+    \input{tex/toc.tex}
+    % \input{tex/todo.tex} % TODO
+    \input{conf/setup2.tex}
+    
+    %%%%%%%%%% CONTENT %%%%%%%%%%
+    \input{tex/chapters/abstract.tex}
+    \input{tex/chapters/1_background/main.tex}
+    \input{tex/chapters/2_solution/main.tex}
+    \input{tex/chapters/3_evaluation/main.tex}
+    
+    %%%%%%%%%% APPENDIX %%%%%%%%%%
+    \input{tex/appendix/main.tex}
+    
+    %%%%%%%%%% REFERENCES %%%%%%%%%%
+    \input{tex/bib.tex}
+    
+\end{document}

@@ -1,0 +1,66 @@
+
+% \section{Censimento Artesian utilizzo}
+% vargiu
+%     generazione pmax centrali continuo
+%         input/output su axpoanalysis
+%     spot
+%         market assessment
+        
+        
+% mk, pointconnect, jao, aste
+%     tramite VS, arkivehelperV2
+%     ogni giorno, anche piu` volte al giorno
+    
+%     utilizzo analitico, direzionato ai trader come tabella or powerbi
+%         legge da artesian, e va su AxpoAnalysis
+%         16 progetti VS
+        
+% vivien
+%     pmax centrali
+%     dati gme da AxpoAnalysis
+
+% DAMAS interconnessione con frontiere
+%     domani prelevero` dal cavo tot energia
+%     deriva da JAO (DAMAS: JAO ita?)
+%     piattaforma ita JAO
+
+
+% python download api, timeseries gme , terna sunset, mk, meteologica (meno prioritaria)
+%     dump dati ogni tot
+%     zona tag TSV  (UTC, ...)
+
+
+\section{Confronto DWH Axpoanalysis/Reply}
+    \paragraph{Unavailability} Unica tabella su AxpoAnalysis, due su Reply.
+    \paragraph{MarketSession MGP} AxpoAnalysis una tabella per ogni fase $MI_{1-7}$, $MGP$ e $MSD$; Reply unica tabella per tutto.
+    
+    \paragraph{\hl{TODO}}
+
+\section{DW requirements}
+    \paragraph{Beolet:}
+        \begin{itemize}
+            \item Limiti transiti
+                \begin{itemize}
+                    \item Provider
+                        \begin{itemize}
+                            \item \hl{DAMAS} \label{todo:damas}
+                                \begin{itemize}
+                                    \item Logica speciale per RTE (FR)
+                                    \item \hl{Normalizzazione in inserimento?}
+                                \end{itemize}
+                            \item GME
+                            \item TERNA
+                                \begin{itemize}
+                                    \item Limiti trasporto
+                                    \item Limiti dovuti ad outages
+                                \end{itemize}
+                        \end{itemize}
+                    \item Country from/to
+                    \item Giorno
+                    \item Ora
+                    \item Pub time
+                    \item Limit
+                \end{itemize}
+            \item Domanda/offerta mgp
+            \item Transiti mgp
+        \end{itemize}

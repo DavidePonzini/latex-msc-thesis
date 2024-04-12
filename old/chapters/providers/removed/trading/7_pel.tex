@@ -1,0 +1,37 @@
+\todoproviders{intro}
+chiedere a vargiu
+
+bredy sistema ertm axpo
+    bredy azienda che ha fatto elviz, energy risk trade management
+    elviz, entrano tutti i contratti dell'azienda, alcuni aggregati altri no
+        contratti trading massima granularita`, sales mensile
+        contratti, prezzi, indici
+        per calcolare portafoglio, rischio esposizione, PEL (profit and loss)
+        esempio esposizione: si ha centrale nucleare, si deve fornire energy ma il cliente non paga quel mese, quanto  perdo?
+        
+        
+\subsubsection{BRADY PEL ALL}
+    \todoproviders{bredy pel all}
+    
+\subsubsection{DWH ETRM}
+    \todoproviders{dwh etrm}
+    
+    working set (ark), orchestratore (sw che gestisce altri processi, tipo "scheduler" (dipende da azioni, esempio, si guarda \$?) centralizzato che coinvolge processi diversi)
+    
+    ws da snapshot elviz e lo mette in dwh ertm, db oracle usato da risk
+    
+\subsubsection{ELVIZ CACHE}
+    \todoproviders{elviz}
+    
+    gestito da ark
+\subsubsection{ETRM ENRICHMENT}
+    \todoproviders{etrm enrichment}
+
+    di ark
+    in elviz mi arrivano dati da tante fonti, non e` detto che ci siano tutte le info
+    
+    mancano ad esempio info su codice cliente che si trova da un'altra parte
+    
+    ertm enrichment le recupera, mette assieme e prepara il dato per essere caricato su elviz
+    
+    chiedere a punta/cristina

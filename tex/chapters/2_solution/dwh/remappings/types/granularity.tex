@@ -1,0 +1,33 @@
+Most of the data downloaded by the ETL process have a column indicating its granularity or to how which day it refers to (in the case of forecasts).
+
+\begin{table}
+    \centering
+    \begin{tabular}{|c|c|}
+        \toprule
+        Original & Remapped \\
+        \midrule
+        15M& \\
+        60M& \\
+        \bottomrule
+    \end{tabular}
+    \caption{Granularity remappings}
+    \label{tab:dwh:remapping:granularity}
+\end{table}
+
+\begin{table}
+    \centering
+    \begin{tabular}{|c|c|}
+        \toprule
+        Original & Remapped \\
+        \midrule
+        D& \\
+        D+1& \\
+        D+7& \\
+        M& \\
+        \bottomrule
+    \end{tabular}
+    \caption{Granularity remappings}
+    \label{tab:dwh:remapping:granularity2}
+\end{table}
+
+Reply has chosen to use the notation reported in the first column of Table \ref{tab:dwh:remapping:granularity}.

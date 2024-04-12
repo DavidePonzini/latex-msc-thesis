@@ -1,0 +1,28 @@
+We happened to notice some inconsistencies between the data present in the DWH and the same data in the old DB.
+
+In detail, we had the same information except for the publication time, which differed.
+Table \ref{tab:issues:entsoe_web_ftp} shows an example of this problem.
+
+The data in the DWH was downloaded from ENTSOE's FTP service, while the one in the DB was downloaded through a web scraper.
+
+Upon further investigation, we found out that the data in the FTP service is updated daily, while the web pages are updated at real-time.
+
+\todoissues{Completare, riscrivere sopra}Given the high importance of having real-time data, we had to stop the current process and build it again from zero.
+
+
+\begin{table}
+    \centering
+    \begin{tabular}{|c||c|c|c|c||c|}
+        \toprule
+        Source                 & Plant      & Outage id & Version & Status    & Publication         \\
+        \midrule
+        \multirow{2}{1cm}{Web} & TIHANGE 1S & aM***bg   & 1       & Active    & 02/11/2017 11:46:13 \\
+                               & TIHANGE 1S & aM***bg   & 2       & Cancelled & 02/11/2017 11:48:03 \\
+        \midrule
+        \multirow{2}{1cm}{FTP} & TIHANGE 1S & aM***bg   & 1       & Active    & 02/10/2018 17:56:10 \\
+                               & TIHANGE 1S & aM***bg   & 2       & Cancelled & 02/10/2018 17:56:10 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Web vs FTP publication times}
+    \label{tab:issues:entsoe_web_ftp}
+\end{table}

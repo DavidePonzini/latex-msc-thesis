@@ -1,0 +1,15 @@
+Databricks stores downloaded and transformed files on Data Lake.
+
+Each folder contains a different type of data, in order to avoid confusion.
+
+\paragraph{Rawdata}
+    The folder \texttt{rawdata} contains all files downloaded from the web \textit{as-is}.
+    
+    These files will be read by Databricks, which will perform normalization and cleaning operations on them.
+
+\paragraph{Srcdata}
+    Cleaned files are stored under the \texttt{srcdata} folder.
+    
+    These files will then be inserted into the data warehouse by an apposite procedure in Databricks.\newline
+    
+This decision to have two different folders helps in avoiding confusion when tracing errors.

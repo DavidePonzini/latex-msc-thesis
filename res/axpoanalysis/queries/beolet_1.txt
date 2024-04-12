@@ -1,0 +1,172 @@
+SELECT
+	2 AS ranking,
+	'DAMAS' AS provider,
+	CAST(InsertDateUTC AS SMALLDATETIME) AS publication_time,
+	CASE Border
+		WHEN 'RTE-TERNA' THEN 'France'
+		ELSE 'Italy_NORD' END
+		AS country_from,
+	CASE Border
+		WHEN 'TERNA-RTE' THEN 'France'
+		ELSE 'Italy_NORD' END
+		AS country_to,
+	CAST(Giorno AS DATE) AS Date,
+	Ora AS Hour,
+	CASE Border
+		WHEN 'RTE-TERNA' THEN NTC-99
+		WHEN 'TERNA-RTE' THEN NTC+99
+		ELSE NTC END
+		AS Limit
+FROM [dbo].[V_AXPO_DAMAS_NTC]
+WHERE
+	Giorno = '$date_ref'
+	AND Border IN ('RTE-TERNA', 'TERNA-RTE')
+
+; --UNION ALL
+
+SELECT
+	4 AS ranking,
+	'DAMAS' AS provider,
+	CAST(InsertDateUTC AS SMALLDATETIME) AS publication_time,
+	CASE Border
+		WHEN 'APG-TERNA' THEN 'Austria'
+		WHEN 'ELES-TERNA' THEN 'Slovenia'
+		ELSE 'Italy_NORD' END AS country_from,
+	CASE Border
+		WHEN 'TERNA-APG' THEN 'Austria'
+		WHEN 'TERNA-ELES' THEN 'Slovenia'
+		ELSE 'Italy_NORD' END AS country_to,
+	CAST(Giorno AS DATE) AS Date,
+	Ora AS Hour,
+	NTC AS Limit
+FROM
+	[dbo].[V_AXPO_DAMAS_NTC]
+WHERE
+	Giorno = '$date_ref'
+	AND Border IN ('APG-TERNA','TERNA-APG','ELES-TERNA','TERNA-ELES')
+
+; --UNION ALL
+
+SELECT
+	5 AS ranking,
+	'GME' AS provider,
+	CAST(publication_time AS SMALLDATETIME) AS publication_time,
+	country_from,
+	country_to,
+	Date,
+	Hour,
+	SUM(Limit) AS Limit
+FROM (
+	SELECT
+		DATEADD(DAY,-1,Date) AS publication_time,
+		CASE
+			WHEN Da='CORS' THEN 'Italy_SARD'
+			ELSE CONCAT('Italy_',Da) END AS country_from,
+		CASE
+			WHEN A='CORS' THEN 'Italy_SARD'
+			ELSE CONCAT('Italy_',A) END AS country_to,
+		Date,
+		Hour,
+		Limite AS Limit
+	FROM dbo.V_WA_GME_LimitiTransitoMGP
+	WHERE
+		[Date] = '$date_ref'
+		AND A IN ('NORD','CNOR','CSUD','SUD','SICI','SARD','ROSN','CORS')
+		AND Da IN ('NORD','CNOR','CSUD','SUD','SICI','SARD','ROSN','CORS')
+	) sub
+WHERE
+	country_from <> country_to
+GROUP BY
+	publication_time,
+	country_from,
+	country_to,
+	Date,
+	Hour
+
+; --UNION ALL
+
+SELECT
+	6 AS ranking,
+	'TERNA' AS provider,
+	CAST(publication_time AS SMALLDATETIME) AS publication_time,
+	country_from,
+	country_to,
+	Date,
+	Hour,
+	SUM(Limit) AS Limit
+FROM (
+	SELECT
+		DATEADD(DAY,-1,Date) AS publication_time,
+		CASE
+			WHEN REPLACE(LEFT(Zona, 4),' ','')='CORS' THEN 'Italy_SARD'
+			ELSE CONCAT('Italy_',REPLACE(LEFT(Zona, 4),' ','')) END AS country_from,
+		CASE
+			WHEN REPLACE(RIGHT(Zona, 4),' ','')='CORS' THEN 'Italy_SARD'
+			ELSE CONCAT('Italy_',REPLACE(RIGHT(Zona, 4),' ','')) END AS country_to,
+		Date,
+		Hour,
+		Value AS Limit
+	FROM dbo.v_WA_TERNA_LimitiTransiti
+	WHERE
+		[Date] = '$date_ref'
+		AND REPLACE(LEFT(Zona, 4),' ','') IN ('NORD','CNOR','CSUD','SUD','SICI','SARD','ROSN','CORS')
+		AND REPLACE(RIGHT(Zona, 4),' ','') IN ('NORD','CNOR','CSUD','SUD','SICI','SARD','ROSN','CORS')
+	) sub
+WHERE
+	country_from <> country_to
+GROUP BY
+	publication_time,
+	country_from,
+	country_to,
+	Date,
+	Hour
+
+; --UNION ALL
+
+SELECT
+	8 AS ranking,
+	'TERNA' AS provider,
+	publication_time,
+	country_from,
+	country_to,
+	[Date],
+	Hour,
+	SUM(Limit) AS Limit
+FROM (
+	SELECT
+		CAST(DATEADD(DAY,-1,[Datetime]) AS SMALLDATETIME) AS publication_time,
+		CASE
+			WHEN REPLACE(LEFT(Da, 4),' ','')='CORS' THEN 'Italy_SARD'
+			ELSE CONCAT('Italy_',REPLACE(LEFT(Da, 4),' ','')) END AS country_from,
+		CASE
+			WHEN REPLACE(RIGHT(A, 4),' ','')='CORS' THEN 'Italy_SARD'
+			ELSE CONCAT('Italy_',REPLACE(RIGHT(A, 4),' ','')) END AS country_to,
+		CAST(Datetime AS DATE) AS [Date],
+		Hour,
+		CASE
+			WHEN [Limit] IS NULL THEN CASE
+				WHEN [OriginalValue] IS NULL THEN LAG([OriginalValue],1,0) OVER (ORDER BY Da,A,Hour DESC)
+				ELSE [OriginalValue] END
+			ELSE Limit END AS Limit
+	FROM dbo.v_WA_TrasmissionOutages
+	WHERE
+		[Datetime] = '$date_ref'
+		AND A IN ('NORD','CNOR','CSUD','SUD','SICI','SARD','ROSN','CORS')
+		AND Da IN ('NORD','CNOR','CSUD','SUD','SICI','SARD','ROSN','CORS')
+	) m
+WHERE
+	country_from <> country_to
+GROUP BY
+	publication_time,
+	country_from,
+	country_to,
+	Date,
+	Hour
+ORDER BY
+	ranking,
+	provider,
+	publication_time,
+	country_from,
+	country_to,
+	Date,
+	Hour

@@ -1,0 +1,46 @@
+\paragraph{Programming languages}
+    Databricks supports multiple programming languages, even in the same file.
+    
+    Reply has however decided to write almost exclusively in Python, in order to provide a high level of consistency and readability between all scripts.
+    
+    Different languages are used only when it is impossible, or very complex, to write some functionalities in Python.
+
+\paragraph{File and Folders}
+    Reply created several scripts in Databricks, which are used to download and process all required data.
+
+    Scripts are divided into subfolders, each folder representing a different provider.
+    
+    \subpar{Common functionalities}
+        A folder called "Includes" contains several files, which define methods used by all providers.
+    
+        These methods, for example:
+            \begin{itemize}
+                \item Set-up connections to DataLake, which is used to store all data downloaded.
+                \item Allow file listing and recovery from DataLake.
+                \item Allow recovery of FTP files under certain commonly used criteria.
+                \item Allow querying databases.
+            \end{itemize}
+            
+        Since these operations need to be performed for each provider, it makes perfectly sense to store them all in one place.
+    
+    \subpar{Providers}
+        The other folders represent all providers from which data needs to be downloaded.
+        
+        Each folder contains several scripts.
+        Each script downloads a single file and applies some custom logic before storing it on DataLake.
+        
+    \subpar{LocalUtils}
+        Each folder associated with a provider contains a sub-folder called "LocalUtils", which defines some methods used by all scripts related to that provider.
+        
+        This folder, for example, contains all configuration required to download data from the provider, such as FTP credentials.
+        
+        These methods are used for all data downloaded by a given provider, explaining the need to put them into a common folder.
+        
+        However, since each provider is different and requires different download approaches, it makes sense not to expose these scripts to other providers.
+
+    \subpar{Deployment}
+        All these scripts are stored under a single folder, named \texttt{ETL}.
+        
+        Having all the data in one place allows for a quick deployment, since it is simply necessary to download the whole folder and overwrite the old one.
+        
+        

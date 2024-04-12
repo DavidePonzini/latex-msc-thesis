@@ -1,0 +1,31 @@
+Preliminary tests have shown many problems related with the ETL process.
+
+\paragraph{Range tests}
+    Range tests have shown that 50\% of the data streams on the Data Warehouse have at least the same date range than the on-premise databases.
+    
+    Out of 38 tests executed, we had the following results:
+    \begin{itemize}
+        \item 17 data streams had a greater date range on the Data Warehouse than on the on-premise databases.
+        \item 2 data streams had the same range on both databases.
+        \item 16 data streams on the Data Warehouse had a smaller date range compared to the local databases.
+        \item 3 Data Warehouse data streams were empty
+    \end{itemize}
+
+\paragraph{Key tests}
+    Key Tests results were more disappointing at first.
+    Out of 38 possible tests, we were able to perform only 16.
+    The other tests could not be written because there were information (for example, columns or remapping tables) missing.
+    
+    Out of these 16 tests, only two initially gave acceptable results, with 98\% and 92\% of the data contained in the on-premise database being available on the Data Warehouse.
+    All the other results were pretty low, with 5 of them around 30\%, 2 lower than 10\% and the remaining 8 at 0\%.
+    
+\paragraph{Further analysis}
+    These results, especially the ones at 0\% meant it was necessary to further analyze the situation, to understand if the issue laid within the Data Warehouse or the testing suite itself.
+    
+    We began exploring both databases manually, with the support of Axpo domain specialists.
+    Several differences in the data formats had been found.
+    For example, some fields contained manually generated data, while in other cases an hour notation different from the standard format was used in the on-premise databases.
+    In some other cases, the data was supposed to be different, so this kind of test could not be applied (see section \ref{section:tests:data:fct_publ} for details).
+    
+    This lead to an improvement of the testing suite, now taking into account these differences.
+

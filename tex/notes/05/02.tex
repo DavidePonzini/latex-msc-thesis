@@ -1,0 +1,22 @@
+  exchange: prezzo, vol, curve, block bid (offerte su gruppi di ore, con condizioni addizionali sopra)
+  apx: be nl
+  epex: fr de ch 
+  gme: it
+  omie: es pt
+  
+  
+  
+  
+  ----------------
+  
+  processo di caricamento su dwh
+    
+    schema src
+        relazione 1-1 scaricatore-tabella
+        scaricatore tronca la tabella ed inserisce i dati scaricati quel giorno
+        le viste rinominano colonne e castano i dati ai tipi corretti (prima sono tutti varchar)
+    schema stg
+        caricano i dati da viste src e rimappano i dati, applicando eventualmente altre operazioni (aggiunta di costanti...)
+        i dati sono caricati su tabelle dm, se non sono gia` presenti
+    schema dm
+        tabelle end-user, vengono interrogate da utenti finali

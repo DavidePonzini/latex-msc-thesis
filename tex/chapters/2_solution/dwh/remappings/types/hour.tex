@@ -1,0 +1,104 @@
+The energy market presents different problems related to hour handling.
+We will see them in detail, along with how they have been remapped.
+
+\paragraph{Notation}
+    The most apparent issue is the lack of a standard notation amongst all providers.
+    
+    \begin{table}
+        \centering
+        \begin{tabular}{|r|c|}
+            \toprule
+            Provider        & Hour format   \\
+            \midrule
+            EU Market 	    & 7             \\
+            EU Market 	    & Hour 7        \\
+            EU Market 	    & Volume H07    \\
+            IT Market       & 7             \\
+            EU Transfer     & 06            \\
+            IT Transfer     & 06            \\
+            IT Transfer     & 6             \\
+            IT Transfer     & H07           \\
+            \bottomrule
+        \end{tabular}
+        \caption{Different notations for the same hour (7 am).}
+        \label{tab:dwh:remapping:hour:notation:7}
+    \end{table}
+    
+    Table \ref{tab:dwh:remapping:hour:notation:7} shows an example of how the same hour is referred to by different providers.
+    
+    These different notations cause many problems during queries, since the same value has different meanings depending on the provider.
+    
+    As such, it is necessary to devise a solution to normalize all the hours into a single notation, independently of the provider.
+    
+\paragraph{Daylight Saving Time} \label{section:dwh:dst}
+    One of the problems most commonly encountered is caused by Daylight Saving Time (DST).
+    
+    On the last Sunday of March, time is shifted one hour forward at 2am while, on the last Sunday of October, time is shifted one hour back at 3am.
+    
+    As a consequence, in March we have a day with 23 hours, since the hour between 2 and 3am is skipped, while in October we have a day with 25 hours, since the hour between 2 and 3am is repeated twice.
+    
+    The main problem is that each provider handles these hours in their own way, using their own notation.
+    As a consequence, the same value may have different meanings depending on the provider.
+    
+    Some providers, for example, start numbering the hours from 0, while others start from 1.
+    In this case, it becomes clear that a value of \texttt{1} can indicate either \texttt{0am} or \texttt{1am}.
+    
+    An additional problem is also given by the lack of a standard notation for expressing the hours between 2am and 3am on the last Sunday of October, which are repeated twice.
+    The second repetition needs however to be distinguished with a different notation.
+    Table \ref{tab:dwh:remapping:hour:notation:3} shows how these hours are referred to by different providers.
+    
+    \begin{table}
+        \centering
+        \begin{tabular}{|c|c c c c c|}
+            \toprule
+            Provider    & 0am        & 1am        & 2am         & 2am (2)     & 3am        \\
+            \midrule
+            Forecasts	& 0          & 1          & 2           & 3           & 4          \\
+            Weather	    & 0          & 1          & 2A          & 2B          & 3          \\
+            % \midrule
+            Market A	& 1          & 2          & 3           & 4           & 5          \\
+            Market B	& 1          & 2          & 3           & 4           & 5          \\
+            Market B	& Volume H01 & Volume H02 & Volume H03A & Volume H03B & Volume H04 \\
+            Market C	& 1          & 2          & 3           & 3B          & 4          \\
+            Market C	& Hour 1     & Hour 2     & Hour 3A     & Hour 3B     & Hour 4     \\
+            Market C	& Volume H01 & Volume H02 & Volume H03A & Volume H03B & Volume H04 \\
+            Market D	& 1          & 2          & 3           & 4           & 5          \\
+            % \midrule
+            Transfer A  & 1          & 2          & 3           & 4           & 5          \\
+            Transfer A  & ORA01      & ORA02      & ORA03       & ORA04       & ORA05      \\
+            Transfer B  & 0          & 1          & 2           & 3           & 4          \\
+            Transfer C  & 0          & 1          & 2A          & 2B          & 3          \\
+            \midrule
+            Remapped to & 1          & 2          & 3           & 4           & 5          \\
+            \bottomrule
+        \end{tabular}
+        \caption{
+            Different hour notations during DST changes (on last Sunday of October).
+            The last row specifies the remapped value for all occurrences.
+        }
+        \label{tab:dwh:remapping:hour:notation:3}
+    \end{table}
+
+\paragraph{Gas Day} \label{section:dwh:gas_day}
+    Gas providers handle dates in a different way, using a particular notation called \textit{Gas Day}.
+    Gas days start at 6am and end at 6am of the next day.
+    
+    Differently from standard dates, there are no DST changes, which means that each day across the whole year has 24 hours.
+    During DST, each day is as a consequence shifted by an hour (gas days start and end a 7am).
+    
+    As a consequence, each file retrieved from gas providers contains data about to two different days: the hours 6-24 are related to a given day, while the remaining (24-6), are related to the following one.
+    
+\paragraph{Timezones}
+    Some websites provide dates in local time, which means that these dates must take into account GMT.
+    
+    Additional problems are presented by DST changes.
+    For example, DST changes in the UK occur between 1am and 2am (local time), which, taking into account the GMT difference, is the same time as 2-3am (the moment DST changes in Italy).
+    
+    This means that the same hour not only changes meaning depending on the provider, since each one has its own notation, but also on the geographical zone.
+        
+\paragraph{Solution}
+    The solution is to create a table which specifies how to remap each hour into their actual value.
+    
+    Considering that most queries will need this kind of data, as well as the fact that remaps are likely not to change for existing data, it has been chosen to materialize the remapped hours directly into the tables.
+    
+    In this way, users will expect faster computational times, as well as simpler queries.

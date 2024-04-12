@@ -1,0 +1,38 @@
+\documentclass[a4paper, 10pt]{report}
+
+%%%%%%%%%% CONF %%%%%%%%%%
+\input{conf/packages.tex}
+\input{conf/colors.tex}
+\input{conf/setup.tex}
+\input{conf/commands.tex}
+\input{conf/bib.tex}
+\input{conf/title.tex}
+
+%%%%%%%%%% DOCUMENT %%%%%%%%%%
+% \begin{document}
+    % \maketitle
+    
+    %%%%%%%%%% TOC %%%%%%%%%%
+    \input{tex/_sections/toc.tex}
+    \input{tex/_sections/todo.tex} % TODO
+    \input{conf/setup2.tex}
+
+    %%%%%%%%%% CONTENT %%%%%%%%%%
+    \part{High-level}
+        \input{old/chapters/intro/main.tex}
+        \input{old/chapters/users/main.tex}
+        \input{old/chapters/workflow/main.tex}
+        \input{old/chapters/sprints/main.tex}
+        \input{old/chapters/providers/main.tex}
+    \part{Technical}
+        \input{old/chapters/azure/main.tex}
+        \input{old/chapters/etl/main.tex}
+        \input{old/chapters/dwh/main.tex}
+    \part{Review}
+        \input{old/chapters/issues/main.tex}
+        % \input{old/chapters/future/main.tex}
+    
+    %%%%%%%%%% REFERENCES %%%%%%%%%%
+    \input{tex/_sections/bib.tex}
+
+% \end{document}

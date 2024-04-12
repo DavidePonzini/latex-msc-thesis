@@ -1,0 +1,144 @@
+flussi input axpoanalysis
+    elviz:
+    snam:
+        dato grezzo
+    epson:
+        temperature
+            dwh commerciale
+        dwh etrm
+    pfx11:
+        stessa struttura bredy\_pel\_all)
+    milazzum:
+        sta su db commerciale
+        bisogna fare join con dwh trading
+        read-only
+            - External table join?
+            - Copiare?
+    genscape:
+    the ice (altri dati):
+        sono gia` stati pianificati in sprint?
+    gassco:
+        flussi per remit
+        unavailability planned/unplanned
+            exit terminal
+            fields and processing plants
+        impatto disponibilita` su unplanned (dati presenti solo in gassco)
+            su planned c'e` solo quanto scende
+            (scaricatore: gestione update)
+            CONTROLLARE XLSX
+        AGGIUNGERE COMMENTI SU UNAVAILABILITY UNPLANNED
+    damas:
+        all borders
+    genscape: produzione realtime impianti (jolly2)
+        serve una tabella
+            value
+            impianti/interconnessioni
+            data
+            datasource
+            type
+            country
+            confidence level
+        1h
+    eia:
+        gas
+            frequenza
+            valore
+            data
+            descr
+            unit
+            update time
+
+    
+--------------------------------------------------------------------------------------------------------
+
+
+vargiu 
+    dati db interni
+        tabelle generate da lui
+        bredy\_pel\_all
+            transazioni elviz
+            
+        remi allocato (gas)
+            snam (dato grezzo)
+        temperature epson (gia` fatto)
+            da db diversi
+                commerciale (provincia, zona gas)
+                dwh etrm (temperature)
+                1 giorno
+        transazioni snam
+            morira`
+            dato grezzo
+            7k val
+        ipp\_report\_tpo
+            sprint centrali
+            come bredypelall
+            pfx11
+            255k
+        milazzum
+            db commerciale
+            copiare?
+            1 giorno, join con dwh tr
+            readonly
+
+
+
+
+bonolini
+    futuro, nuove: genscape, ice (altri dati, moltissimi), eia (energy usa) --- sprint jolly?
+    
+    gassco:  [aggiungere?] WEB SCRAPER, complesso
+        flows, remit
+        1h, ma ogni 5min sarebbe ideale
+        maintenance, piu` storico
+        si deve far polling, per cambiamento data in alto a dx
+        
+        unav plann/unpl exit terminal, fields and processing plants
+        
+        aggiungere valori impatto disponibilita` su unplanned (viene solo da gassco)
+            mentre su planned c'e` solo quanto scende
+            
+            manca end date su unplanned
+            status su planned\
+            
+        -- scaricatore gestione update
+        
+        VEDI XLSX
+    
+    unaval unplanned: add comments
+
+    damas: custom downloader (magari prima controlliamo)
+        tutti i borders
+        un mese alla volta
+            OCCHIO AI CAMBI ORA, NON SONO GESTITI!
+        verso fine anno ntc anno dopo, importanti
+        ervery ? (sarebbe da far polling)
+    
+    ice: assessment opzioni, futures da ice
+        codice prodotto da input
+            scarico intero file, ne prendo una parte
+    
+    genscape: produzione realtime impianti (jolly2)
+        serve una tabella
+            value
+            impianti/interconnessioni7
+            data
+            datasource
+            type
+            country
+            confidence level
+        1h
+    eia:
+        gas
+            frequenza
+            valore
+            data
+            descr
+            unit
+            update time
+        1day
+        api
+            
+    
+    
+    ntc=net transfer capacity
+    

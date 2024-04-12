@@ -1,0 +1,82 @@
+\section{26/03}
+    Discussione con Andrea Vargiu e Vivien Beolet sul db.
+    
+    I dati FCT sono scaricati, non computati. Le analisi di ieri sono state quindi basate su assunzioni frettolose ed eseguite in assenza di informazioni.
+    Devo informarmi meglio prima di trarre conclusioni.
+    
+    Comunque, axpoanalysis e` una DWH usata da algoritmi trading.
+    
+    Gli algoritmi scaricano ogni 30 min dati (tra cui quelli che ho visto nei giorni precedenti) e li interrogano in un certo modo.
+    Ad esempio, si vuole il FCT piu` recente per un certo country/provider (Spagna/Gas) prima delle 12, ora in cui si devono effettuare operazioni in borsa.
+    
+    Le tabelle esterne sono hostate/create/fatte da aziende di consulenza.
+    
+    Le viste sono banalmente join tra la tabella in questione e i nomi delle dimensioni esterne (per esempio si rimpiazza country\_id con country.
+    
+    Comunque le tabelle esterne saranno rifatte e verranno integrate in Axpo (ma non si sa quando).
+    
+    Ieri ho capito da una discussione che axpo e` la enel svizzera.
+    
+    Un altro problema e che alcuni dati sono divisi in molte tabelle e richiedono quindi diverse query (mentre sarebbe piu` opportuno farne una sola su una singola tabella).
+    
+    Al momento ho richiesto accesso sia alle altre tabelle e viste TS\_* e v\_TS\_*.
+    
+    Devo anche richiedere accesso ad Azure, sia per la fase di estrazione (Databricks) che per la memorizzazione (blob) che per la trasformazione (Databricks).
+    
+    Ah, mi hanno anche schedulato una visita con il medico di Axpo il 15 aprile (lunedi`) alle 16.20. Mi perdero` acrobatica.
+    
+    Ok, dopo aver scritto una mail a vassalli a., che era in modalita` non disturbare, mi sono fatto coraggio ed ho scritto a punta, che mi ha rediretto a vargiu, che mi ha dato i permessi.
+    
+    \subsection{AXPISQLPRD}
+        Analisi effettuata su TS\_* e v\_TS\_*.
+        \subsubsection{Catalog}
+            Permette un mapping tra timeseries (fact) e dimensioni:
+            \begin{itemize}
+                \item Provider
+                \item Category
+                \item Energy source
+                \item Technology
+                \item Power plant
+                \item Country
+                \item Country from
+                \item Country to
+                \item Version
+                \item Unit
+                \item Granularity
+                \item Model
+                \item Scenario
+            \end{itemize}
+            
+            Puo` essere interrogata sia per ricavare le dimensioni da un fact id (su cui e` presente un indice) che per il fact id dalle dimensioni (apposito indice).
+            
+        \subsubsection{Catalog job}
+            Same as Catalog, but there are also:
+            \begin{itemize}
+                \item Created time
+                \item Publication time
+            \end{itemize}
+            
+            Most likely used for jobs (such as the one described above (every 30 min)).
+        
+        \subsubsection{Power plant (parameter)}
+            Information on power plants and their efficiency, capacity, costs
+        
+        \subsubsection{Flow}
+            Information on flows (from, to, how much, what, from which market)
+            
+        \subsubsection{Timeseries}
+            Most likely production
+            
+        \subsubsection{Volatility correlation}
+            
+            
+        \subsubsection{Holiday}
+            Information on holidays on different countries
+            
+        \subsubsection{PTDF}
+            \texttt{Petroleum Technology Development Fund}
+            
+        \subsubsection{Aggregated curve}
+            Curves on sell and buy (price and volume)
+    
+    \input{tex/notes/03/26_ROLAP.tex}

@@ -1,0 +1,65 @@
+Softare developed by ARK. \cite{bib:artesian:url}
+
+Stores temporal series.
+
+Esistono \texttt{Timeseries} e \texttt{Timeseries versionate}. Di queste ultime e` presente piu` di una versione per lo stesso giorno.
+
+Retrieves data from several providers, performs ETL, exposes timeseries (retrievable via Excel or API).
+
+Usato perche` effettua operazioni non banali sui dati che risultano comode (e sarebbe stato necessario rieffetturarle nella DWH).
+
+\paragraph{Providers}
+    \input{tex/chapters/providers/artesian/providers.tex}
+
+\paragraph{ETL}
+    \begin{itemize}
+        \item estrazione da varie fonti
+        \item Aggregazione/deaggregazione dove necessario
+        \item normalizzazione dati
+        \item controlli nel caso di assenza di dati (si possono ricavare da informazioni aggregate diversamente, pero` ci si deve assicurare coincidano)
+    \end{itemize}
+    
+\paragraph{Data extraction}
+    Si possono estrarre dati sia tramite UI che tramite API
+    
+    Processo:
+    \begin{itemize}
+        \item selezionare curve desiderate (vedi figure \ref{fig:artesian:select_curves})
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth]{res/artesian/select_curves.png}
+                \caption{Curve selection in Artesian}
+                \label{fig:artesian:select_curves}
+            \end{figure}
+        \item pannello extract
+        \item specificare date
+            \begin{itemize}
+                \item range
+                \item relative
+                    \begin{itemize}
+                        \item rolling week
+                        \item rolling month
+                        \item rolling quarter
+                        \item rolling year
+                        \item week to (current) date
+                        \item month to date
+                    \end{itemize}
+                \item period from/to
+                \item period (d+1, m+3, y-1, ecc)
+            \end{itemize}
+        \item selezionare versione (per curve versionate)
+            \begin{itemize}
+                \item muv (most updated version) si prende sempre il dato piu` recente disponibile
+                \item etc (non ci interessano)
+            \end{itemize}
+        \item selezionare granularita
+            \begin{itemize}
+                \item 10min to month
+            \end{itemize}
+        \item selezionare timezone
+        \item selezionare time transformation
+            \begin{itemize}
+                \item gas day 6-6\footnote{Il giorno gas inizia alle 6am e finisce alle 6am del giorno dopo}
+                \item thermal year\footnote{L'anno termico inizia il 1 ott e termina il 30 sett}
+            \end{itemize}
+    \end{itemize}

@@ -1,0 +1,90 @@
+Countries can be referred to in different ways.
+As such it is necessary to normalize these information.
+
+\paragraph{Problems}
+    Providers refer to countries in two different granularities.
+    
+    The most generic information indicates the country itself, while the most detailed specifies a smaller zone, which belongs to a specific country.
+    These zones are specific to the energy sector and divide a country based both on geographical and energetic factors.
+    
+    Not all countries are divided in zones.
+
+    \subpar{Countries}
+        Most providers use the same notation for expressing countries.
+        
+        However there are a few exceptions.
+        For example, some providers spell countries in a different way or using a different case.
+        Some other providers refer to countries using a two-character ISO notation\footnote{
+            Standard notation commonly used worldwide.
+            For example, Italy is abbreviated `IT' and United States `US'.\\
+            For a comprehensive list of country codes, see \cite{bib:country_codes}.
+        }.
+        
+        As such, the data needs to be remapped into a common notation, to preserve consistency amongst all data.
+        This remapping is done through an apposite table, such as the one shown in table \ref{tab:dwh:remapping:country}.
+        
+        \begin{table}
+            \centering
+            \begin{tabular}{|c|c|}
+                \toprule
+                Original            & Remapped      \\
+                \midrule
+                Belgian	            & Belgium       \\
+                Belgium	            & Belgium       \\
+                \midrule
+                Germany             & Germany       \\
+                germany\_luxembourg	& Germany       \\
+                Germany/Luxembourg	& Germany       \\
+                \midrule
+                netherlands	        & Netherland    \\
+                Netherland	        & Netherland    \\
+                \midrule
+                PT	                & Portugal      \\
+                Portugal	        & Portugal      \\
+                \bottomrule
+            \end{tabular}
+            \caption{Country remappings.}
+            \label{tab:dwh:remapping:country}
+        \end{table}
+        
+    \subpar{Country zones}
+        Country zones are either referred to directly or by using a particular notation known as \texttt{EIC}\footnote{
+            \textit{Energy Identification Codes}.
+            These coding scheme is used across Europe to facilitate cross-border exchanges and to efficiently and reliably identify different objects and parties relating to the Internal Energy Market and its operations \cite{bib:enstoe:eic}.
+        }.
+        
+        In the first case no normalization operations are needed, while in the second, it is necessary to remap these codes to both a normalized version of the zone name as well as to the country it belongs to.
+        
+        \begin{table}
+            \centering
+            \begin{tabular}{|c|l c|}
+                \toprule
+                EIC                 & Zone                  & Country   \\
+                \midrule
+                10YIT-GRTN-----B	& Italy	                & Italy     \\
+                10Y1001A1001A73I	& Italy\_NORD           & Italy     \\
+                % 10Y1001A1001A70O	& Italy\_CNOR           & Italy     \\
+                % 10Y1001A1001A71M	& Italy\_CSUD           & Italy     \\
+                10Y1001A1001A788	& Italy\_SUD            & Italy     \\
+                10Y1001A1001A75E	& Italy\_SICI	        & Italy     \\
+                10Y1001A1001A83F	& Germany               & Germany   \\
+                10YDE-ENBW-----N	& Germany\_TransnetBW   & Germany   \\
+                \bottomrule
+            \end{tabular}
+            \caption{EIC codes and remapped values.}
+            \label{tab:dwh:remapping:country_zone}
+        \end{table}
+        
+        Table \ref{tab:dwh:remapping:country_zone} shows an example of \texttt{EIC} codes, as well as their remapped values.
+        
+\paragraph{Solution}
+    Two additional tables have been created, containing remapping information for both countries and zones.
+    
+    These tables are similar to tables \ref{tab:dwh:remapping:country} and \ref{tab:dwh:remapping:country_zone}.
+    
+    Since not all queries require this kind of data, the remapping are performed only at logical level.
+    As such, new queries require to perform join operation with the remap tables.
+    
+    On the other hand, several views created for specific departments already perform these join operations, simplifying user interaction.
+    
+    The size of these tables are small (less than 100 rows), so the performance impact is negligible.

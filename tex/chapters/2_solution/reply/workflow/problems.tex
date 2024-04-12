@@ -1,0 +1,57 @@
+Several issues with the workflow have been found during development.
+This section will list them, along with the chosen solutions.
+
+\subsubsection{History Retrieval}
+    Initially, the history retrieval process suffered from many unexpected issues.
+    
+    This phase was originally planned after the deployment process.
+    However, during the first sprint, the retrieval process for many providers broke.
+    
+    Upon further analysis we discovered that several providers changed data format over the course of the years.
+    As such, it was necessary to modify the history retrieval process to handle these special cases.
+    
+    For example, a specific provider exposes \texttt{csv} files for the current year and \texttt{gz} archives for the previous years.
+    This difference had been overlooked during development since the developers only focused on recent files.
+    
+    After deployment, when the process had been scheduled to retrieve data for multiple years, the downloader crashed since it was expecting a \texttt{csv} file but retrieved an archive.
+    Developers had to manually analyze the error log, as well as the provider website to understand the problem and implement a solution.
+    
+    Some other providers maintained instead the \texttt{csv} format, but changed their internal structure, for example adding or removing columns which were expected by the downloader.
+    
+    \paragraph{Optimization}
+        As an additional safety measure, Reply decided to further modify the history retrieval process, making it download each day independently.
+        
+        Originally, the process downloaded all days required from the provider, before storing them in bulk onto the Data Warehouse.
+        In case of errors all data downloaded would be lost.
+        
+        Since the errors related to different formats for old data have no impact on more recent data, it is reasonable to store each day independently onto the Data Warehouse.
+        In this way, in case of errors, all the other information would still be available onto the Data Warehouse.
+        
+        This optimization also prevented the downloader from having to retrieve the same data multiple times in case of failure.
+    
+    \paragraph{Workflow change}
+        This additional work caused some delays in the original planning, since they hadn't been originally taken into account.
+        
+        In order to take these delays into account, Reply decided to execute a preliminary history retrieval process during development, testing the process not on just a few days but on several years.
+        In this way, this kind of errors would be noticed before deployment, ensuring the deadlines would be respected.
+        
+\subsubsection{Initial delays}
+    The development of the first sprint took far more time than originally planned.
+    
+    This was caused by a misestimation of the ETL development complexity.
+    This error was mainly caused by two factors.
+
+    \paragraph{Technology}
+        The team was not yet familiar developing on \textit{Microsoft Azure Cloud Computing Platform \& Services}.
+        
+        This aspect had been underestimated by Reply, which led to a too much optimistic deadline.
+        Much more time than expected had been spent trying to solve problems related to Azure tools, which led to delays in the original planning.
+        
+    \paragraph{Providers}
+        Another aspect which had been originally underestimated was the high complexity of some providers.
+        
+        Some providers required very complex methods to extract data from them.
+        These methods required more time to develop than originally estimated, which led to more delays.\newline
+    
+    Since we requested Reply to respect the original deadlines even considering their delays, they had to add some team members to catch up, as well as grouping together some smaller sprints, to reduce the overhead.
+    

@@ -1,0 +1,87 @@
+\section{22/03}
+    Riunione con Marini per parlare di DWH retail
+    
+    I dati sono presi da:
+    \begin{itemize}
+        \item CRM (Salesforce)
+        \item Billing (SAP IS-U)
+        \item FI-CA (SAP R/3)
+        \item Metering (IFS)
+    \end{itemize}
+    
+    Avviene succesivamente una fase di ETL.
+    
+    La DWH retail ha 5 livelli.
+    \begin{enumerate}
+        \item Data loading
+        \item
+        \item Aggregazione temporale dati
+        \item Proiezione nel futuro
+            \begin{itemize}
+                \item Non e` previsione
+                \item Si assume non ci siano cambiamenti nel tempo
+                \item Utenti non ci lasciano e non ne arrivano di nuovi
+                \item \textit{Milazzum} (dal tizio che l'ha sviluppata)
+            \end{itemize}
+        \item Serie nel tempo (quindi cubi)
+            \begin{itemize}
+                \item Usato per uniformare il linguaggio
+                \item Report mensile, settimanale parte commerciale
+                \item Tipo quanti utenti ci sono (in modo da fornire una descrizione)
+            \end{itemize}
+    \end{enumerate}
+    
+    La DWH e` aggiornata giornalmente alle 19, impiega un paio d’ore
+
+    Come frontend si usa clickview (in futuro si passera` a clicksense o powerbi)
+	I dati sono presi a da L2, L3, L4
+	Si usa come input anche il metering (per analisi orarie, non permesse da DWH)
+
+    Tutti i servizi andranno in cloud.
+
+    \subsection{Uscita da DWH}
+        Si usano query manuali e \textit{RADAR}.
+        \begin{itemize}
+            \item Esecutore query normalizzate
+            \item Formato output: (num (0,1,2), txt)
+            \item Tramite metadati e` possibile raggruppare query
+            \item Identifica anomalie dati, per ritrovarli piu` facilmente.
+        \end{itemize}
+
+        Report per segmento cliente, numeri per cliente
+	    
+	    Mancano pero` alcune informazioni su un paio di clienti al giorno (non si sa chi siano).
+    
+    \subsection{Portafoglio}
+        Misure analizzate:
+        \begin{itemize}
+            \item chi
+            \item dove
+            \item cosa, a che prezzo
+            \item per quanto tempo
+        \end{itemize}
+        
+        Colonne di interesse:
+        \begin{itemize}
+            \item delivery
+            \begin{itemize}
+                \item fatturazione certa
+            \end{itemize}
+            
+            \item delivery adjusted
+            \begin{itemize}
+                \item fatt certa, entrati * p (.85/.9)
+            \end{itemize}
+            
+            \item contractualized
+            \begin{itemize}
+                \item tutto cio` che entra
+            \end{itemize}
+        \end{itemize}
+
+    \subsection{Metriche}
+        \begin{itemize}
+            \item numeriche
+            \item volumi
+            \item anzianita`
+        \end{itemize}

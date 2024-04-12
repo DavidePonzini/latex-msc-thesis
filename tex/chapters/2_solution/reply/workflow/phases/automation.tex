@@ -1,0 +1,9 @@
+Each website provides new data at regular intervals.
+It is thus necessary to execute the ETL process each time the provider has new data.
+
+During the functional analysis, each provider has been marked with its update frequency.
+This process schedules, for each flow, when the ETL process will be executed, ranging from once a month to multiple times a day.
+
+Since it is necessary to download multiple data streams from each provider, Reply decided to schedule a single job per provider which executes all jobs required for that provider.
+
+A secondary function of the scheduling process is to pause the whole Data Warehouse at night, since it is not going to be used, to reduce cloud maintenance costs.

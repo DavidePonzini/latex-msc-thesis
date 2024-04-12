@@ -1,0 +1,48 @@
+\label{section:azure}
+Moving the analytical back-end to the cloud requires choosing a cloud service provider.\\
+Axpo and Reply concorded on relying on {Microsoft Azure Cloud Computing Platform \& Services}.
+
+This chapter will provide a description of the main cloud technologies used for the project.
+
+\section{Introduction}
+
+Microsoft Azure is a cloud computing platform offering several services created by Microsoft.
+Many different programming languages, tools and frameworks, including both Microsoft-specific and third-party software and systems are supported\cite{bib:azure:wikipedia}.
+
+Tools, called \textit{Resources} can be organized under a \textit{Resource Group}, a sort of ``container'' which allows to set configurations (e.g. permissions) at a global level.
+
+In this chapter we will analyze the most important tools used for the ETL and analysis processes under the \textit{ToyCase} enviroment.
+We will also provide a description of the various environments used.
+
+Figure \ref{fig:azure_resources} shows all resources available in the \textit{ToyCase} environment.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.7\textwidth]{res/azure/toycase.png}
+    \caption{Microsoft Azure \textit{ToyCase} Environment Resources.}
+    \label{fig:azure_resources}
+\end{figure}
+
+\section{Enviroments}
+    \input{tex/chapters/1_background/azure/environments.tex}
+
+\section{Resources}
+    This section will describe the main Azure resources used for downloading, storing and processing the data.
+    \subsection{Databricks}
+        \input{tex/chapters/1_background/azure/databricks.tex}
+    \subsection{DataLake}
+        \input{tex/chapters/1_background/azure/datalake.tex}
+    \subsection{SQL Data Warehouse}
+        \input{tex/chapters/1_background/azure/dwh.tex}
+    \subsection{PolyBase}
+        \input{tex/chapters/1_background/azure/polybase.tex}
+    \subsection{Other resources}
+        \subsubsection{Data Factory}
+            \input{tex/chapters/1_background/azure/data_factory.tex}
+        \subsubsection{Virtual Machine}
+            \input{tex/chapters/1_background/azure/vm.tex}
+        \subsubsection{Analysis Services}
+            \input{tex/chapters/1_background/azure/analysis_services.tex}
+        \subsubsection{Automation Account}
+            \input{tex/chapters/1_background/azure/automation.tex}
+    

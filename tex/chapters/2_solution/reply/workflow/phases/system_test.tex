@@ -1,0 +1,21 @@
+Functional and technical analysts must also make sure that the whole ETL process is working as intended and that the data downloaded into the Data Warehouse is identical to that present in the original websites.
+
+These tests are done by both analysts together by hand.
+They manually check some data samples from the data warehouse and compare them with the same values in the websites.
+
+This testing phase is focused mainly on the following aspects:
+\subpar{Number of rows}
+    Testers manually assert that the number of imported values in the Data Warehouse (i.e. table rows) is the same than those available on the website.
+    
+    As such, they can be sure the ETL process didn't lose any values.
+
+\subpar{Conversion errors}
+    Testers check columns on which conversion operations have been applied, to make sure the process completed successfully.
+    
+    These checks for example assert that decimal numbers have been correctly interpreted, dates have been properly remapped and that each column contains the right kind of data.
+    
+\subpar{Sample checking}
+    Lastly, testers take same sample rows and compare all their values with the data available on the website.
+    
+    If all the values are identical, then it's likely the ETL process is working properly and that all the other values will be correct too.
+

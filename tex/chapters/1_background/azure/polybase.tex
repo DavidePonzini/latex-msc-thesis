@@ -1,0 +1,21 @@
+PolyBase is a tool which allows the SQL Data Warehouse to process SQL queries on data from external sources \cite{bib:azure:polybase}.
+
+The most common external source is Azure Blob Storage.
+PolyBase is able to create a connection layer between the Data Warehouse and Blob files.
+These files appear to the user as normal external tables.
+These files can then be directly queried through SQL.
+
+PolyBase is natively available on Microsoft Azure, so there's no need to perform a manual installation.
+The tool is also often transparent to the users, so most times it is actually used without even realizing it.
+
+PolyBase relies on Hadoop to perform cross-source SQL operations.
+
+\paragraph{Advantages}
+    Without PolyBase, querying a SQL Data Warehouse along with an external source would require either transferring half of the data available, bringing all data in a single format, or performing two separate queries and writing custom client-side logic to join the data obtained.
+    
+    With PolyBase this problem is removed, since users can directly query both sources at once using SQL, without having to transfer anything beforehand.
+
+\paragraph{Performance}
+    PolyBase can push computation to Hadoop to improve performance.
+    The decision is handled by PolyBase's own query optimizer, which uses statistics on external tables to make the cost-based decision.
+    Computations on Hadoop create MapReduce jobs which leverage distributed computational resources.

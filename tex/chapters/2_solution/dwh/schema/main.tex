@@ -1,0 +1,109 @@
+The data warehouse contains several schemas, each one serving a specific purpose.
+
+Two schemas, called \textit{Source} and \textit{Staging}, are used for loading the data, while a different one, called \textit{Data Mart}, contains the final data.
+
+The first two schemas behave differently from the latter, since their purpose is to process the content of each \texttt{csv} file when inserting new data into the Data Warehouse.
+These tables are emptied each time a different file is processed.
+
+Several additional schemas, are also present in the data warehouse, but they have a less important role.
+
+\subsection{Source}
+    The \textit{Source} schema, named \texttt{src}, is where Databricks directly loads the \texttt{csv} data at the end of the ETL process.
+    
+    It contains a table for each data stream downloaded by Databricks.
+    The structure of these tables is identical to the \texttt{csv} structure.
+    All fields are of type \texttt{VARCHAR}, since all values loaded from \texttt{csv} are by default interpreted as strings.
+    
+    Each table in this schema has associated a view.
+    These views are used to cast the data to their correct types as well as rename the fields into a standardized format.
+        
+\subsection{Staging}
+    The \textit{Staging} schema, called \texttt{stg}, loads the data from the \texttt{stg} schema views and performs some more operations on them.
+    
+    The number of tables in this schema is much lower than the one in the \texttt{src} schema.
+    This is because the data in this schema are aggregated together.
+    
+    \paragraph{Example}
+        Let us take for example weather data.
+        Information about weather come from several providers.
+        Each one has different information: some providers may contain data about temperature and humidity, while others may have information about gas or power demand\footnote{
+            These information are correlated.
+            For example, on a cold day there is more need for heating and, as a consequence, a higher gas demand.
+        }.
+        In other cases, for example, a provider may be related to a single zone (e.g., energy consumption in Austria), so multiple providers are needed to get the whole European picture.\\
+    
+    In all these cases, it is necessary to group together data from different providers, since the information they provide are strictly correlated.
+    
+    This aggregation is done in this schema by apposite procedures.
+    These procedures read data from the views present in the \texttt{src} schema.
+
+\subsection{Data Mart}
+    The \textit{Data Mart} schema, called \texttt{dm}, contains the first layer of data to be consulted by users.
+    
+    Data are loaded into this schema from the \textit{staging} stables.
+    
+    Tables in this schema are meant to be consulted by end-users for their daily needs.
+    Information contained in this schema are both up-to-date and complete (i.e., each table contains data related to several years back and there are no missing values).
+    
+\subsection{DBO}
+    The \texttt{dbo} schema contains remappings, which are used to normalize some data.
+    
+    Remappings will be described in section \ref{section:dwh:remappings}.
+
+\subsection{Configuration}
+    An interesting schema is the one called \texttt{configuration}, which contains some parameters which influence the ETL process executed by Databricks.
+    
+    Amongst all the parameters, two are of particular interest: the download time range, as well as retry information, in case of download failure.
+    Table \ref{tab:dwh:configuration} is an example of configuration parameters stored in this schema.
+    
+    \begin{table}
+        \centering
+        \begin{tabular}{|c c|c c|c c|}
+            \toprule
+             Provider   & Stream      & From       & To   & Retries & Retry Delay \\
+             \midrule
+             Weather\_A & Temperature & 01/01/2017 & NULL & 3       & 10         \\
+             Weather\_A & Humidity    & 01/01/2017 & NULL & 3       & 10         \\
+             Weather\_B & Temperature & 01/01/2019 & NULL & 2       & 15         \\
+             Weather\_B & Pressure    & 01/01/2018 & NULL & 5       & 5         \\
+             \bottomrule
+        \end{tabular}
+        \caption{Some configuration parameters.}
+        \label{tab:dwh:configuration}
+    \end{table}
+    
+    \paragraph{Download time range}
+        These information are used to specify when to stop when downloading data from a given provider.
+        
+        This parameter has two uses: first of all, in case the provider has more historical information than what needed, it limits the amount of data recovered.
+        This not only reduces history download time, but also prevents too much unneeded data from being loaded into the data warehouse.
+        In the opposite case, this parameter is also needed not to attempt to download historical data from a provider if we know it is not available.
+        This prevents the downloader from encountering errors caused by non-existent files.
+        
+        A \texttt{NULL} value specifies that there is no time range limit.
+    
+    \paragraph{Retries}
+        The downloaders have been programmed to attempt again to download data in case the provider timeouts.
+        
+        These parameters specify both how many attempts to perform, as well as the required delay between each attempt.
+        
+        Given the different importance and update frequency of the different providers, these values differ depending on which data is being downloaded.
+    
+    \paragraph{Remarks}
+        It is important to notice that these parameters are not specified for each provider, but for each data stream.
+        
+        This decision has been made considering two factors.
+        
+        First of all, sometimes data from a single provider is recovered from multiple sources (e.g. different websites belonging to the same organization).
+        Each source can present a different level of availability.
+        
+        Secondly, some data streams are more important than others.
+        It is reasonable to spend more effort downloading this kind of data if they happen to be unavailable, otherwise some critical processes may stop working.
+
+\subsection{Other Schemas}
+    The Data Warehouse contains also other schemas, which play, however, a less important role in the data processing procedures.
+    
+    For example, the schema \texttt{trd} (\textit{Trading}) contains some views explicitly requested by the trading team.
+    These views are just a simple manipulation of the data stored in the \textit{Data Mart} schema.
+    Their purpose is exposing some data in a particular format, which is required by some tools used by the trading department.
+    

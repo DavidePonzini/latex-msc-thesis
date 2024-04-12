@@ -1,0 +1,14 @@
+SELECT
+	Hour,
+	ZonaMercato AS ZoneGroup,
+	CASE Tipo
+		WHEN 'OFF' THEN Quantita ELSE -Quantita END AS Volume,
+		Prezzo AS Price
+FROM dbo.V_WA_GME_DomandaOffertaMGP
+WHERE
+	Date = '$date_ref'
+ORDER BY
+	ZonaMercato,
+	Hour,
+	Price,
+	Quantita

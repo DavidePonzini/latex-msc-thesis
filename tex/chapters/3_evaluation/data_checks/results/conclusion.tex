@@ -1,0 +1,30 @@
+The results discussed above show that the ETL process, once properly tuned, is effective at downloading data and that the downloaded information are correct.
+
+Some problems, however, are still present in the Data Warehouse, which, once fixed, will certainly increase the results of the tests.
+
+It has been shown that building a proper testing suite is a very complex matter, and a poorly constructed one can prove ineffective at detecting issues either by giving false negative or false positive results.
+
+\paragraph{False negatives}
+    A false negative result happens when a given datum appears to be different from the on-premise database but in reality is correct.
+    This can happen for two main reasons.
+    
+    In some cases, values have been processed in the on-premise database, but this process has not been replicated correctly by the test.
+    In this case, it is necessary to apply the same kind of data transformation in the test.
+    
+    Another possible scenario is caused by a different handling on \texttt{NULL} values.
+    For example, some coefficients for specific hours are sometimes not specified by the providers.
+    The Data Warehouse stored these missing values as \texttt{NULL}s, while in the on-premise database they were assigned default values, which were different depending on the type of coefficient.
+    
+\paragraph{False positives}
+    A test can also produce false positive results, especially if the test is too much generic.
+    These results can hide existing problems in the Data Warehouse, showing that there are no problems.
+    
+    For example, let us consider a table containing information about multiple countries.
+    Let us also assume that for Austria we have data ranging from 2015 to 2019, while for Germany (for which we should have the same range) we are missing data related to 2019.
+    
+    A generic test, computing the minimum and maximum date ranges across all data would show a range of 2015-2019, which means that there are no problems.
+    This result is, however, a false positive.
+    A more in-depth test, testing the minimum and maximum date ranges for each country would however notice the issue.
+    
+    Most tests are however more complex than this example however, since it is necessary to aggregate information across a large number of dimensions.
+    

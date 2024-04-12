@@ -1,0 +1,79 @@
+\begin{itemize}
+    \item Category
+    
+    \item Country
+    \begin{itemize}
+        \item Different granularity in the same column
+        \item Use queries such as \code{WHERE country LIKE `Italy\%'}
+        \item Example:
+        \begin{itemize}
+            \item \textit{Italy}
+            \item \textit{Italy\_NORD}
+            \item \textit{Italy\_CNOR}
+            \item \textit{Italy\_CSUD}
+            \item \textit{Italy\_SUD}
+            \item \textit{Italy\_SICI}
+            \item \textit{Italy\_SARD}
+            \item ...
+        \end{itemize}
+    \end{itemize}
+    
+    \item Energy source
+    
+    \item Future product
+    \begin{itemize}
+        \item 2-level aggregation (future days, weeks)
+        \begin{itemize}
+            \item Offset (D+n / W+n / M+n / ...)
+            \item Offset type
+            \begin{itemize}
+                \item Day 
+                \item Weekend 
+                \item Week 
+                \item Month 
+                \item Quartet 
+                \item Year 
+                \item BOM
+            \end{itemize}
+        \end{itemize}
+    \end{itemize}
+    
+    \item Granularity
+    
+    \item Holiday
+    \begin{itemize}
+        \item Start
+        \item Holiday name
+        \item Country (dimension)
+    \end{itemize}
+    
+    \item Model
+    
+    \item Outage status
+    
+    \item Outage type
+    
+    \item Power plant
+    \begin{itemize}
+        \item Power Plant (same plant, multiple codes; mostly 1-1)
+        \item Code (same code, multiple plants; mostly 1-1)
+        \item Energy source (dimension)
+        \item Technology (dimension)
+        \item Country (dimension)
+        \item Capacity
+        \item Plant type
+        \item Plant father (dimension, self)
+    \end{itemize}
+    
+    \item Profile
+    
+    \item Provider
+    
+    \item Scenario
+    
+    \item Technology
+    
+    \item Unit
+    
+    \item Version
+\end{itemize} 

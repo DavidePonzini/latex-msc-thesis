@@ -1,0 +1,81 @@
+\subsection{Range Tests}
+    This kind of test asserts that each database has data related to the same date range.
+
+    The minimum and maximum dates for each table are extracted from each database and compared.
+    Results are acceptable if the Data Warehouse contains at least the whole range present in the on-premise database.
+    
+    These tests initially recovered the date range over the whole dataset, but were later modified to retrieve more detailed information, computing the total number of hours\footnote{
+        The number of hours is an important metric since most data are timeseries at hourly granularity.
+        If the hour count is equal to the actual number of hours in a given time period, it means there are no ``holes'' in the dataset.
+        These missing values could not be noticed with the initial test.
+    } downloaded for each category\footnote{
+        With \textit{category}, we mean all the relevant attributes needed to distinguish between two different values.
+        This is important especially for forecasts, since multiple publications of the same hour must count as one (since the last value is always the most accurate).
+    }.
+    
+    \paragraph{Exceptions}
+        It is necessary to analyse all the results manually, since several exceptions can be made for the above rule.
+    
+        \subpar{Very old data}
+            One possible exception is that of very old data.
+            Some information related to several years ago are not currently used by the company and as such are not strictly necessary.
+            
+            Moreover, it may be currently impossible to retrieve these information from their providers, since they may no longer be accessible.
+            
+            On the other hand, if these information are needed it may be possible to perform a one-time manual data import from the on-premise database to the Data Warehouse.
+            
+        \subpar{Scheduling}
+            If a table contains all data required except for the current day (or the next day in case of forecasts) it may be a problem related to the scheduling chosen for downloading data.
+            
+            For instance, the on-premise database may download data in the morning while the Data Warehouse downloads the same information during the afternoon.
+            These test are thus dependent on the time they are executed.
+            To avoid this limitation, the last two days are not taken into account when performing these tests.
+            
+        \subpar{Company needs}
+            The most discerning element is, as always, the actual needs of the company.
+            
+            For example, if only the last year of some type of data is actually used, it is irrelevant if the on-premise database stores more years than the Data Warehouse, as long as the latter has the range required by the company.
+    
+    \paragraph{Failure}
+        In case of failure, if no exceptions can be made for the data, Reply is notified and tasked with solving the issue.
+        
+        Solutions are specific to the kind of data of the provider.
+        In some cases they may be as simple as changing a few parameters in the history retrieval settings, while in other cases, they may require more complex interactions and analyses of the provider, as well as additional development of the ETL procedures.
+    
+\subsection{Key Tests}
+    This kind of test asserts that each database contains data related to the same information.
+    
+    It is a comparison based on the keys which identify a specific datum.
+    Specific queries extract all the keys from each table in both databases and compare them.
+    
+    The most basic comparison is to perform an intersection between the two key datasets and count the number of obtained elements.
+    This number, compared to the element count in the on-premise database, gives us a percentage of how many rows are in common between the two databases.
+    
+    More advanced tests are done manually, since they require in-depth knowledge of the domain, and are used to adjust the queries used to extract the keys.
+    
+    For example, it is sometimes necessary to aggregate or deaggregate some data, to use particular remappings or to rename some values (for instance, some values may be written all uppercase in a database and camel-case in the other; in other cases there may be additional characters, such as underscores).
+    
+    \paragraph{Exceptions}
+        Usually the tests are repeated until all the data in the on-premise database is present in the Data Warehouse.
+        
+        However, depending on the company needs, it may be enough to settle for a lower value, depending on how the data are actually used.
+    
+    \paragraph{Failure}
+        In case of test failure, Reply is notified with the problems encountered and will provide a fix.
+        These tests will then be repeated until all keys are correctly present in both databases.
+        
+\subsection{Value Tests}
+    The last kind of tests asserts that the two databases not only contain data related to the same information, but that they also contain the same data.
+    
+    This test is similar to a Key Test, but takes also into account the values associated with each key set.
+    This kind of tests is able to expose problems related for example to wrong aggregation or deaggregation operations.
+    
+    The tests are considered successfully passed if we obtain the same common data percentage as the final results of the Key Tests (which is usually 100\%, unless it has been decided a lower value is enough for the company needs).
+    
+    \paragraph{Failure}
+        In case of failure, Axpo and Reply work together to understand the cause of the problem.
+        
+        This collaboration is necessary since Axpo can provide technical domain information, while Reply has more knowledge related to the ETL process.
+        Once the problem is identified, Reply will provide a fix.
+        
+        These tests will be then run again, until no further problems are found.

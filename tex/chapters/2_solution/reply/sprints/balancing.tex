@@ -1,0 +1,129 @@
+Sprints have been designed to be balanced, i.e., each sprint requires roughly the same amount of effort.
+
+It is necessary to take into account different factors, in order to estimate the effort required for a sprint, as well as the expected sprint deadline.
+
+This balancing activity depends on the following aspects:
+\begin{itemize}
+    \item Provider source
+    \item Technique required to download data
+    \item Intrinsic provider complexity
+\end{itemize}
+
+These factors are fundamental from an organizational point of view, since they allow Axpo employees to coordinate their work with the Data Warehouse development process.
+
+For example, some employees have processes currently running on local machine, which they want to transfer to the cloud.
+
+In order to transfer they processes they need, however, to retrieve data from the Data Warehouse.
+As a consequence, they need to wait for the ETL process to be fully developed before they can start migrating their processes onto the Cloud.
+
+\subsubsection{Provider source}
+    An important aspect to consider when estimating the complexity of a provider is whether it is an internal or external source.
+    
+    \begin{table}
+        \centering
+        \begin{tabular}{|c|c|c|}
+            \toprule
+                                            & Internal              & External                  \\
+            \midrule
+             Already known                  & Yes, in depth         & Sometimes, not in depth   \\
+             Can be modified                & Yes                   & No                        \\
+             Direct access to DB            & Yes                   & No                        \\
+             Possible data inconsistency    & Yes, but known        & Yes, unknown              \\
+             \bottomrule
+        \end{tabular}
+        \caption{Difference between internal and external data sources.}
+        \label{tab:reply:sprints:data_source}
+    \end{table}
+    
+    \paragraph{Internal}
+        Internal sources are directly owned, and often also developed, by Axpo.
+        They can be either databases or tools.
+        
+        Internal sources are the easiest to extract data from, for a variety of reasons.
+        
+        First of all, they are already well-known, since they have been developed or chosen (in case of a third-party tool) by someone working at Axpo.
+        
+        Secondly, they can be modified to accommodate the Data Warehouse needs.
+        For example, if the Data Warehouse needs to extract data in a specific format, it is possible to modify the tool to expose it in that given format.
+        As such, the Data Warehouse extraction process can be simplified.
+        
+        Another important aspect is that most of these tools rely on its own database, which can also be directly queried to extract information directly, thus further simplifying the process.
+    \paragraph{External}
+        Most providers can be defined as external sources, that is websites or services not owned by Axpo.
+        
+        Some of these services are public, while others provide data under a paid subscription.
+        
+        These websites present several difficulties, compared to internal sources.
+        
+        First of all, they are less known that internal sources, since no-one at Axpo directly worked on them.
+        As a consequence, it is necessary to spend more time studying the tool.
+        There is also a consistent possibility of unexpected issues coming up during development\footnote{
+            For example, a provider exposes data pertaining to the current year in \texttt{csv} format, while data related to previous years are stored in \texttt{gz} format.
+            There is however no documentation about this difference and the problem can only be noticed by analyzing when a custom downloader stops working.\\
+            For a more in-depth description of the issues encountered, see section \ref{section:etl:difficulties}.
+        }.
+        
+        Secondly, there is a lack of standardization between each source: each company provides data in its own format and way, making the extraction process more complex.
+        
+        Moreover, there could also be some problems with the data provided.
+        For example, some providers use different date conventions depending of the type of data required.
+        These different formats need to be normalized into a common notation before inserting the data into the Data Warehouse.\newline
+        
+    Table \ref{tab:reply:sprints:data_source} sums up the main differences between internal and external data sources.
+        
+\subsubsection{Download technique}
+    Another important aspect to consider when estimating the complexity of a provider is the technique required for extracting data from it.
+    
+    A more complex extraction process will take more time and resources, and needs to be accounted for in advance.
+    
+    Also, some developers are more experienced than others on a particular extraction technique.
+    To maximise efficiency, it is best to have each developer working on the technique they are more skilled in.
+    
+    This approach requires however having in a single sprint several different extraction techniques.
+    Otherwise, some developers would be forced to work with technologies they are less familiar with, increasing the effort required for implementing the process.
+    
+    \paragraph{Database}
+        Databases are the fastest and easiest sources to extract data from.
+        
+        Data are already in a structured format, since they are stored in a relational table.
+        This structure can also be easily altered by writing a query, for example for aggregating or de-aggregating some data.
+        
+        The only difficulty is understanding the structure of the tables.
+        However, since all databases are internal sources, this problem can easily be simplified by asking directly the Axpo employees who work on that database.
+    
+    \paragraph{FTP}
+        Extracting data from FTP shares has a small degree of complexity.
+        
+        In most cases, the FTP shares store data in structured formats, such as \texttt{csv} or \texttt{xml}.
+        
+        To download data it is necessary to connect to these share points and retrieve the files required.
+        
+        These files are then parsed and normalized depending on the data structure used by the provider.
+        
+        In some cases, these files require some special processing for the first lines, which are used as headers.
+        
+    \paragraph{API}
+        Some websites offer an API service which can be called to extract data.
+        
+        Depending on the amount of documentation available, this process can either be considered as difficult as extracting data from an FTP share or can prove some serious challenges.
+        
+        In some cases, the required queries required are complex and require an extensive analysis of all parameter combinations, which can often only be carried out empirically.
+        
+    \paragraph{Web scraping}
+        The most difficult and time consuming ETL approach is web scraping, which simulates human web site navigation.e
+        
+        Given its complexity, web scraping is chosen only as a last resort, when a website does not expose any service for directly extracting the data.
+        
+        Web scrapers not only require a large amount of time to be developed, but are also very susceptible to website changes: a single element moved a different page can break the download process for the whole provider.
+        
+\subsubsection{Provider complexity}
+    An important factor to consider is also the intrinsic complexity of a given provider.
+    
+    Some providers consistently provide data in formats which are hard to parse or to extract.
+    
+    In some cases, some websites are difficult to navigate, requiring navigation of multiple pages just to find the information required, while others may require some functionalities (such as scrolling a page with a web crawler) which are hard to implement.
+    
+    In other cases, the data extracted may be in a format which is difficult to parse or requires complex transformation operations for obtaining a format suited for the Data Warehouse.
+    
+    These considerations, which apply at provider-level, are used to estimate a coefficient, which is applied to all the data streams of a given provider.
+    This coefficient helps in correcting the time estimation for a given sprint.

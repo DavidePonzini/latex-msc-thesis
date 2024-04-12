@@ -1,0 +1,42 @@
+\part{Proposed Solution}
+    \chapter*{Overview}
+        Considering all the problems explained previously, Reply proposed a solution for developing the Data Warehouse, as shown in figure \ref{fig:azure:workflow}.
+        Their proposal also included a software architecture for performing analyses on the Data Warehouse.
+        
+        \begin{figure}
+            \centering
+            \includegraphics[width=\textwidth]{res/azure/workflow.png}
+            \caption{Interaction between Azure components.}
+            \label{fig:azure:workflow}
+        \end{figure}
+        
+        \begin{enumerate}
+            \item Several scripts, executed by Databricks, download the data using different techniques, such as API calling, FTP downloading or web scraping.
+            \item This data is then stored on DataLake, under the \texttt{rawdata} folder.
+            \item Those files are recovered by Databricks, which applies some transformations on the data, for example normalization or column removal.
+            \item The result is saved again on DataLake, in \textit{csv} format, under the \texttt{srcdata} folder.
+            \item The values from the \textit{csv} files are loaded into the data warehouse.
+            The communication between the blob storage and the data warehouse is handled by Polybase.
+            \item Some values stored in the data warehouse are accessed by Databricks and used as configuration settings.
+            \item The data warehouse is queried by reporting tools, such as Excel or PowerBI, as well as algorithms developed by Axpo.
+            \item In case of heavy workloads, it is also possible to query a copy of the data warehouse, located on Azure Analytics Services.
+        \end{enumerate}
+        
+        I analyzed their proposal, paying particular attention to the ETL process and Data Warehouse structure, as well as the workflow chosen for developing such structures.
+        
+        In what follows, it will be discussed:
+        \begin{itemize}
+            \item The workflow used by Reply.
+            \item How the ETL process works.
+            \item The structure of the Data Warehouse and the reasons for that choice.
+        \end{itemize}
+        
+        Problems and difficulties identified during each part of the process will also be discussed.
+        Several examples will also be provided.
+
+    \chapter{Migration Process} \label{section:organization}
+        \input{tex/chapters/2_solution/reply/main.tex}
+    \chapter{ETL Process}
+        \input{tex/chapters/2_solution/etl/main.tex}
+    \chapter{Data Warehouse Structure}
+        \input{tex/chapters/2_solution/dwh/main.tex}

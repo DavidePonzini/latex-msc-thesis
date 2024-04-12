@@ -1,0 +1,247 @@
+\section{25/03}
+    Redatto ulteriormente il documento su integrazione SNAM per fatturazione \footnote{Vedi file \textit{Specifiche integrazione SNAM Trilance per fatturazione City Gate}}
+    
+    Ho accesso al db ora.
+
+    Tabelle:
+    \begin{itemize}
+        \item \textbf{TS\_aggregated\_curve}
+        \begin{itemize}
+            \item Values: 61.638.861
+            
+            \item Price and volume at different times, countries
+            
+            \item Values on:
+            \begin{itemize}
+                \item Category
+                \item Country
+                \item Start (date and time)
+                \item Price
+                \item Volume
+                \item Volume agg
+                \begin{itemize}
+                    \item Appears to be\code{sum over(... rows unbounded preceding)}, but it is different at some points
+                \end{itemize}
+            \end{itemize}
+        \end{itemize}
+        
+        \item \textbf{TS\_flow\_forecast}
+        \begin{itemize}
+            \item Values: 15.614.237
+            
+            \item Values on:
+            \begin{itemize}
+                \item Provider
+                \item Category
+                \item Country from
+                \item Country to
+                \item Granularity
+                \item Start (date and time)
+                \item \underline{Scenario}
+            \end{itemize}
+            
+            \item Only some combinations have both FCTs and ACTs \footnote{\textit{select * from (select distinct provider\_id, category\_id, country\_from\_id, country\_to\_id from TS\_flow\_realized) r join (select distinct provider\_id, category\_id, country\_from\_id, country\_to\_id from TS\_flow\_realized) f on f.provider\_id = r.provider\_id and f.category\_id  = r.category\_id and f.country\_from\_id = r.country\_from\_id and f.country\_to\_id = r.country\_to\_id}}
+            \begin{itemize}
+                \item There are FCTs without ACTs and vice-versa
+            \end{itemize}
+            
+            \item Prediction on flows from country $c_1$ to country $c_2$ \footnote{\textit{select r.start\_date, r.start\_hour, r.datavalue as rval, f.datavalue as fval from TS\_flow\_forecast f, TS\_flow\_realized r where f.provider\_id = 3 and f.category\_id = 5 and f.country\_from\_id = 33 and f.country\_to\_id = 16 and f.datavalue > 0 and r.provider\_id = 3 and r.category\_id = 5 and r.country\_from\_id = 33 and r.country\_to\_id = 16 and r.datavalue > 0 and r.start\_time = f.start\_time order by start\_date, start\_hour}}
+            \begin{itemize}
+                \item Non-zero values
+                \begin{itemize}
+                    \item 2942 values
+                    \item 306 identical values
+                    \item 676 values with margin of +- 10
+                    \item 802 values with margin of +- 50
+                    \item 1062 values with margin of +- 100
+                    \item 2933 values with margin of +- 1000    
+                \end{itemize}
+                
+                \item zero values
+                \begin{itemize}
+                    \item 246678 total values
+                    \item 222780 zero values correctly guessed
+                    \item 14323 zero values predicted != 0
+                    \item 6633 non-zero values predicted 0
+                \end{itemize}
+            \end{itemize}
+        \end{itemize}
+        
+        \item \textbf{TS\_flow\_realized}
+        \begin{itemize}
+            \item Values: 2.296.248
+            
+            \item Values on:
+            \begin{itemize}
+                \item Provider
+                \item Category
+                \item Country from
+                \item Country to
+                \item Granularity
+                \item Start (date and time)
+            \end{itemize}
+        \end{itemize}
+        
+        \item \textbf{TS\_timeseries\_forecast}
+        \begin{itemize}
+            \item Values: 75.254.069
+            
+            \item \textit{Predictions on energy sources' productions?}
+            \begin{itemize}
+                \item There is no Power Plant in FTC. \textit{Why?}
+            \end{itemize}
+            
+            \item Values on:
+            \begin{itemize}
+                \item Provider
+                \item Energy source
+                \item Technology
+                \item Country
+                \item Start (date and time)
+                \item \underline{Model}
+                \item \underline{Scenario}
+            \end{itemize}
+        \end{itemize}
+        
+        \item \textbf{TS\_timeseries\_realized}
+        \begin{itemize}
+            \item Values: 18.483.558
+            
+            \item Values on:
+            \begin{itemize}
+                \item Provider
+                \item Energy source
+                \item Technology
+                \item Country
+                \item Start (date and time)
+                \item \underline{Power plant}
+            \end{itemize}
+        \end{itemize}
+        
+        \item \textbf{TS\_unavailability}
+        \begin{itemize}
+            \item Values: 364.595 
+            
+            \item Information on outages
+            \begin{itemize}
+                \item Where
+                
+                \item Why
+                \begin{itemize}
+                    \item Reasons are dirty, would need cleaning (multi-languages, no rules, etc.)
+                \end{itemize}
+                
+                \item Capacity
+                \begin{itemize}
+                    \item Max
+                    \item Available
+                    \item Unavailable
+                \end{itemize}
+            \end{itemize}
+        \end{itemize}
+        
+        \item \textbf{v\_ALL\_Block}
+        \begin{itemize}
+            \item It is a view
+            
+            \item Values: 27.576.082
+            
+            \item \textit{Could be bidding-related?}
+            
+            \item Data:
+            \begin{itemize}
+                \item LimitPrice
+                
+                \item Volume (-800,800 continuous (avg: 31))
+                
+                \item Date (Day, hour)
+                
+                \item Country (by name, not id)
+                
+                \item BlockType (4 codes)
+                
+                \item BlockCodePRM (61k numbers)
+                
+                \item Country
+                \begin{itemize}
+                    \item Austria (318.176)
+                    \item Belgium (5.339.391)
+                    \item France (4.708.915)
+                    \item Germany (12.660.977)
+                    \item Netherlands (4.040.192)
+                    \item Switzerland (508.431)
+                \end{itemize}
+                
+                \item Execution (flag)
+                \begin{itemize}
+                    \item 0 (24.644.796)
+                    \item 1 (2.931.286)
+                \end{itemize}
+                
+                \item MAR (0.1-1 continuous)
+                
+                \item AAR (0-1 continuous)
+                
+            \end{itemize}
+        \end{itemize}
+    \end{itemize}
+    
+    Pausa pranzo.
+    Pasta col sugo ai funghi, arrosto di tacchino con spezie e patate, piselli, carote al vapore, mela.
+    9.50\euro{}. Strano. Va beh, non era il caso di lamentarsi. Pero` magari avrei potuto chiedere informazioni, se avessi avuto un po' piu` di coraggio... ma come chiedere?
+    
+    Guardato anche per le pile AAA (finite) ma costano troppo.
+    
+    \subsection{Punto della situazione}
+        Reply sta effettuando delle sprint per lo sviluppo della nuova DWH
+        
+        La DWH non rimpiazzera` subito quella esistente ma ci verra` affiancata.
+        Successivamente la vecchia verra` disabilitata una volta che tutti i sistemi gia` esistenti useranno la nuova.
+        
+        La prima sprint di Reply e` servita per capire i requisiti e si e` conclusa al mio arrivo.
+        
+        La seconda sprint serve per tirare giu` i dati dai flussi e fare ETL.
+        
+        In questa fase magari dovrei documentarmi un poco sui processi di ETL, ma non sono sicuro siano fondamentali per la tesi.
+        
+        \paragraph{TESI} Si` ecco, la tesi.
+        
+        \input{tex/notes/thesis_title.tex}
+        
+        Quindi in teoria serve:
+        \begin{itemize}
+            \item Data mining
+            \begin{itemize}
+                \item DWH
+                \item Models
+            \end{itemize}
+            
+            \item Advanced analytics
+            \begin{itemize}
+                \item DWH
+            \end{itemize}
+            
+            \item Acquisition and management of energy products
+            \begin{itemize}
+                \item Trascendentale
+                \item ETL
+                \item \textit{Sarebbe piu` retail ma riesco a girarlo anche sul trading (utente chiede energia)}
+            \end{itemize}
+            
+            \item Rules of operation of the energy market
+            \begin{itemize}
+                \item Trascendentale
+            \end{itemize}
+            
+            \item Analysis of user experience (Axpo/Pulsee)
+            \begin{itemize}
+                \item \textit{Sarebbe retail}
+            \end{itemize}
+            
+            \item Structured and unstructured data from different sources
+            \begin{itemize}
+                \item Reply ETL
+            \end{itemize}
+        \end{itemize}
+        
+        Il mio prossimo passo sara` quindi di documentarmi su come reply esegue il processo di ETL, magari imparando anche qualcosa sugli strumenti nel frattempo (databricks, se non erro)

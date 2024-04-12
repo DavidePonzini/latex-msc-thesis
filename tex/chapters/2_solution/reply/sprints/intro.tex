@@ -1,0 +1,32 @@
+The data warehouse needs to contain data originating from a large amount of providers.
+Each provider exposes information related to a specific aspect (for example, stock prices or gas consumption).
+
+The amount of data needed is very large, reaching up to a few thousand different data streams across all providers.
+Considering the size of the project, it was necessary to organize the ETL development of all data streams.
+This organization was driven by two factors.
+
+First of all, it was necessary to migrate multiple existing processes, prioritizing specific ones.
+Some processes played a critical role in the company and having them on a more robust and efficient structure would have provided a greater benefit.
+
+Secondly, each tool requires a different set of data streams, with an almost non-existent overlap.
+As such, each process could be migrated independently.
+
+\paragraph{Example}
+    A specific tool extracted data from existing on-premise databases to produce market prices reports.
+    Since the databases were going to be migrated to the cloud, it was necessary to create a cloud-based ETL process for all the data used by these tool.
+    
+    The development of a new ETL process was necessary to keep the Data Warehouse populated with the most recent data.
+    Having recent data was a critical requisite, since up-to-date information are needed on a daily basis by multiple Axpo employees.
+
+    As such, we planned a Sprint with the goal of enabling the tool to fetch all of its data from the Data Warehouse, instead of having to query multiple on-premise databases.
+
+    For this sprint it was necessary to download a total of 372 data streams from 9 different providers.
+    
+    Each provider exposes multiple data streams.
+    For example, GME\footnote{
+        GME is the manager of the Italian Spot Electricity Market.
+        For more information, see appendix \ref{section:providers:gme}.
+    } provides data about different market sessions, ranging from MGP to all the MI sessions.
+    Moreover, different kinds of information are provided for each session, such as prices, quantities, and transit limits.
+    
+    Each file has been considered a separate data stream.

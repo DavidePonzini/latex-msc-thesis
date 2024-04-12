@@ -1,0 +1,15 @@
+The last step is to deploy the whole structure to the production environment.
+
+The deployment is done by exporting all the scripts used (for both the ETL process and the Data Warehouse configuration) and re-importing them into the new environment.
+All scripts are then executed, in order to:
+\begin{enumerate}
+    \item Initialize (or modify, if they already exist) all tables and procedures in the Data Warehouse.
+    
+    \item Download the first set of data (typically up to a few years before).
+\end{enumerate}
+
+This phase is the most delicate, since this environment is used for production, so it is imperative that the deployment must not cause any errors.
+
+Particular attention must also be paid to the update of existing structures.
+For example, if a table structure has to be changed, it is not possible to simply drop and recreate it, since all data would be lost.
+It is then necessary to compute the difference between the two versions, and to update as needed.

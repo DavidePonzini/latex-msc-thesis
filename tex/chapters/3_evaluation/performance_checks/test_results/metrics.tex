@@ -1,0 +1,114 @@
+This kind of tests has been performed on both the main on-premise database and the cloud Data Warehouse.
+
+\subsubsection{Aggregated metrics}
+    \begin{table}
+        \centering
+        \begin{tabular}{|c|r r r|r r r|}
+            \toprule
+            Database    & Max elapsed & Max CPU  & Max wait & Avg elapsed & Avg CPU & Avg wait \\
+            \midrule  
+            On-premise  & 3147.153    & 1108.736 & 3130.507 & 4.789       & 2.602   & 4.379    \\
+            Cloud       &  150.743    &   48.563 &  126.462 & 0.342       & 0.115   & 0.269    \\
+            \midrule  
+            Proportion  & 4.79\%      & 4.38\%   & 4.04\%   & 7.14\%      & 4.43\%  & 6.13\%   \\
+            \bottomrule
+        \end{tabular}
+        \caption{Aggregated query execution times metrics.}
+        \label{tab:tests:perf:metrics:aggregated}
+    \end{table}
+    
+    From the results of this test, shown in Table \ref{tab:tests:perf:metrics:aggregated}, we can see that the cloud Data Warehouse can produce, on average, query results in 7.14\% of the time required by the on-premise database (more than 12 times faster).
+    Wait times are a bit smaller on the Data Warehouse (keeping in mind the proportion), but are not considerably reduced.
+    
+    More interestingly, the highest execution times recorded are smaller on the Data Warehouse by a large amount (around than 20 times lower).
+    Average CPU times have similar proportions considering both the highest and the average values recorded.
+    
+    A more detailed analysis is however required before coming up to some conclusions.
+    
+\subsubsection{Detailed metrics}
+    The metrics analyzed are shown in Tables \ref{tab:tests:perf:metrics:detailed:aa} and \ref{tab:tests:perf:metrics:detailed:dwh}.
+    These tables contain only the ten queries with the highest total execution time.
+    A larger number of queries, however, has been analyzed, even though they are not listed for readability purposes.
+
+    One of the first things which can be noticed is that the last execution times on the on-premise database are often different from the average values (as expected, since they depend on the current database usage), while on the Data Warehouse the last execution times are, in most cases, identical to the average values.
+    
+    \paragraph{Execution Count}
+        Upon analyzing the execution count for each query, it was noticed that on the Data Warehouse most queries had been executed just once.
+        As a consequence, the average query execution count for both databases have been computed for both databases.
+        
+        The results showed that the Data Warehouse had not been used enough yet: each query had been executed on average 9 times, compared to an average of 5129 in the on-premise database.
+        
+    \paragraph {Data Warehouse Usage}
+        Moreover, I knew that only a restricted subset of Axpo users where actively using the Data Warehouse, since the migration was still in development and the data needed by the other users had not been migrated yet.
+        This smaller number of users meant that the average workload of the Data Warehouse was lower than in the on-premise database.
+        
+        Having a smaller workload, meant that the Data Warehouse could use more resources to compute the query results.
+        
+        As a result, we can conclude that these metrics can only provide a generic overview of the Data Warehouse performance at the current time.
+
+\begin{table}[p]
+    \centering
+    \begin{tabular}{|r r r|r r r|c|}
+        \toprule
+        \multicolumn{3}{|c|}{Last execution} & \multicolumn{4}{c|}{Average values} \\
+        \midrule
+        Total       & CPU     & Wait         & Total    & CPU     & Wait     & DOP  \\
+        \midrule
+        6839.531    & 224.368 & 6820.834     & 3131.482 & 197.520 & 3115.022 & 12   \\
+         718.741    & 163.319 &  555.421     &  718.741 & 163.319 &  555.421 &  1   \\
+         484.972    &  99.821 &  385.151     &  484.972 &  99.821 &  385.151 &  1   \\
+         272.092    & 186.531 &  256.547     &  258.351 & 165.731 &  244.540 & 12   \\
+         210.750    &  94.374 &  202.885     &  210.750 &  94.374 &  202.885 & 12   \\
+         266.322    &  64.247 &  202.074     &  266.322 &  64.247 &  202.074 &  1   \\
+         247.747    &  52.608 &  195.138     &  247.747 &  52.608 &  195.138 &  1   \\
+         250.279    & 466.570 &  211.398     &  221.347 & 425.721 &  185.870 & 12   \\
+         183.070    &  42.352 &  140.717     &  183.070 &  42.352 &  140.717 &  1   \\
+         148.721    & 120.985 &  138.639     &  111.562 & 108.767 &  102.498 & 12   \\
+ \bottomrule
+    \end{tabular}
+    \caption{Detailed metrics for on-premise database.}
+    \label{tab:tests:perf:metrics:detailed:aa}
+\end{table}
+
+\begin{table}[p]
+    \centering
+    \begin{tabular}{|r r r|r r r|c|}
+\toprule
+\multicolumn{3}{|c|}{Last execution} & \multicolumn{4}{c|}{Average values} \\
+\midrule
+Total       & CPU     & Wait         & Total    & CPU     & Wait     & DOP  \\
+\midrule
+150.742     & 48.562 & 126.461       & 150.742  & 48.562  & 126.461  & 2    \\
+140.425     & 45.220 & 117.814       & 140.425  & 45.220  & 117.814  & 2    \\
+134.712     & 35.646 & 116.889       & 134.712  & 35.646  & 116.889  & 2    \\
+134.385     & 46.860 & 110.955       & 134.385  & 46.860  & 110.955  & 2    \\
+120.121     & 37.765 & 101.238       & 120.121  & 37.765  & 101.238  & 2    \\
+117.977     & 36.492 &  99.731       & 117.977  & 36.492  &  99.731  & 2    \\
+114.978     & 34.205 &  97.875       & 114.978  & 34.205  &  97.875  & 2    \\
+116.704     & 38.060 &  97.674       & 116.704  & 38.060  &  97.674  & 2    \\
+115.938     & 37.497 &  97.189       & 115.938  & 37.497  &  97.189  & 2    \\
+116.585     & 39.543 &  96.813       & 116.585  & 39.543  &  96.813  & 2    \\
+ \bottomrule
+    \end{tabular}
+    \caption{Detailed metrics for Data Warehouse.}
+    \label{tab:tests:perf:metrics:detailed:dwh}
+\end{table}
+    
+\subsubsection{Problems}
+    Tests on metrics, although properly structured, proved not to be representative of the Data Warehouse.
+    
+    \paragraph{Workload}
+        The large difference in active usage caused the data to be too much influenced by noise, in the form of different workloads between the two databases.
+        
+        On the one hand, the local database was actively used by a large number of users, which meant that the database had to deal with a high amount of queries at the same time.
+        
+        On the other hand, the Data Warehouse was used by a restricted number of users, leaving more resources available for computing the results.
+    
+    \paragraph{Different queries}
+        These metrics analyzed the execution times of all the queries executed on each database.
+        It is important to keep in mind that the queries analyzed are not the same however.
+        It is very likely that a consistent number of complex and computationally demanding queries has been run only in the on-premise database, since the Data Warehouse is newer and still incomplete.
+        
+        Some users, who usually execute complex queries, still haven't had the possibility of computing on the cloud, since the data they need hasn't been migrated yet.
+        These queries will very likely increase the metrics obtained from the Data Warehouse.
+        

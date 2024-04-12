@@ -1,0 +1,49 @@
+\begin{itemize}
+    \item Aggregated curve
+    
+    \item CBCO
+    \begin{itemize}
+        \item Limiti capacita` linee elettriche europee
+        \begin{itemize}
+            \item Si usano per ricavare i prezzi di trasporto energia
+        \end{itemize}
+        
+        \item Contiene tutti i vincoli possibili, non solo quelli limitanti
+    \end{itemize}
+    
+    \item Flow (FCT/RLZ)
+    \begin{itemize}
+        \item Trasmissione di energia tra countries
+    \end{itemize}
+    
+    \item Job
+    \begin{itemize}
+        \item Tutti i FCT hanno un publication time
+        \begin{itemize}
+            \item Per evitare di importare due volte gli stessi dati
+        \end{itemize}
+    \end{itemize}
+    
+    \item PDTF
+    \begin{itemize}
+        \item Vincoli limitanti su capacita` linee elettriche europee
+        \item Sono scaricati, ma si potrebbero anche ricavare da CBCO (WIP)
+        \item Contiene l'1.74\% dei dati di CBCO
+    \end{itemize}
+    
+    \item Timeseries (FCT/RLZ)
+    \begin{itemize}
+        \item Consumi
+    \end{itemize}
+    
+    \item Unavailability
+    \begin{itemize}
+        \item Outages on power plants
+    \end{itemize}
+    
+    \item Volatility/Correlation
+    \begin{itemize}
+        \item Model coefficients, computed from prices
+    \end{itemize}
+    
+\end{itemize}

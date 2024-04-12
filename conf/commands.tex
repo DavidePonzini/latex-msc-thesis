@@ -1,0 +1,27 @@
+%%%%%%%%%% STYLE %%%%%%%%%%
+\newcommand{\code} [1] {\colorbox{light-gray}{\texttt{#1}}}
+
+\newcommand{\subpar}[1]{\setlength{\parindent}{4ex}\subparagraph{#1}\setlength{\parindent}{0cm}}
+
+\newcommand{\chapterNoNum}[1]{\chapter*{#1}\addcontentsline{toc}{chapter}{#1}}
+
+%%%%%%%%%% TODO %%%%%%%%%%
+\newcommand{\todotemplate}  [3] {\todo[noprepend, color={#1}, caption={#2: #3}] {#3}}
+
+\newcommand{\todobackground}[1] {\todotemplate{orange}      {Background}{#1}}
+\newcommand{\todoazure}     [1] {\todotemplate{cyan}        {Azure}     {#1}}
+\newcommand{\todoreply}     [1] {\todotemplate{green!75}    {Reply}     {#1}}
+\newcommand{\todoetl}       [1] {\todotemplate{red!60}      {ETL}       {#1}}
+\newcommand{\tododwh}       [1] {\todotemplate{yellow}      {DWH}       {#1}}
+\newcommand{\todotests}     [1] {\todotemplate{gray!50}     {Tests}    {#1}}
+
+%%%%%%%%%% TOC DEPTH %%%%%%%%%%
+\newcommand{\settocdepth}   [1] {\addtocontents{toc}{\protect\setcounter{tocdepth}{#1}}}
+\newcommand{\restoretocdepth}   {\settocdepth{\value{tocdepthdefault}}}
+%%%%%%%%%% REVISION %%%%%%%%%%
+\newcommand{\reword}        [1] {\todo[noprepend, color=white,     linecolor=black, caption={Reword: #1}]   {#1}}
+\newcommand{\note}          [1] {\todo[noprepend, color=yellow!35, linecolor=black, caption={Revision: #1}] {#1}}
+
+%%%%%%%%%% DISABLE %%%%%%%%%%
+% \renewcommand{\reword}{}
+

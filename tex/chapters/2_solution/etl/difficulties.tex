@@ -1,0 +1,119 @@
+During development of the ETL process, there have been many difficulties.
+This section will list the most relevant problems encountered.
+
+\subsection{File Encoding}
+    This problem is related mainly to \texttt{csv} files.
+    Most files are encoded in \texttt{ANSI} format, but a few providers used special characters which required a different encoding.
+    
+    For example, some energy plants or technical description contain accented characters, which are not supported by the \texttt{ANSI} format.
+    
+    Spotting this kind of problems isn't easy, since not all files may present special characters.
+    
+    The solution, on the other hand is easy, since it is sufficient to use \texttt{utf-8} encoding.
+
+\subsection{Wrong File Extension}
+    We also encountered an issue related to a wrong file extension.
+    Terna exposes its data in Excel format, but the websites presents a low level of consistency in its files.
+    
+    While most files were in \texttt{xls} format, a few were in \texttt{xlsx} format, which requires a different method for reading it.
+    However, upon further analysis, the files proved to be regular \texttt{xls} with a wrong file extension.
+    As a result, extensions are ignored when reading files.
+    
+% \subsection{DST} \label{etl:problems:dst}
+%     One of the problems most commonly encountered is that of Daylight Saving Time (DST).
+    
+%     On the last Sunday of March, time is shifted one hour forward at 2am while, on the last Sunday of October, time is shifted one hour back at 3am.
+    
+%     As a consequence, in March we have a day with 23 hours, since the hour between 2 and 3am is skipped, while in October we have a day with 25 hours, since the hour between 2 and 3am is repeated twice.
+    
+%     The main problem is that each provider handles these hours in their own way, using their own notation.
+%     As a consequence, the same value may have different meanings depending on the provider.
+    
+%     This issue was 
+
+% \subsection{Gas day} \label{etl:problems:gasday}
+%     \todoetl{gas day}
+%     gas day goes from 6am to 6am.
+%     however dst changes are handled differently: gas days have always 24 hours, which means that during dst each day is shifted by one hour. (6-6, 7-7)
+% \subsection{Timezones}
+%     \todoetl{timezones}
+%     some sites provide dates in local time, which means that they must be normalized
+    
+%     in some cases we have both the problem of timezones and that of dst
+    
+%     Cambio ora e.g. londra avviene tra 1/2, noi tra 2/3 (che poi e` lo stesso momento, vedi fuso orario)
+
+\subsection{Aggregation/Deaggregation} \label{etl:problems:aggregation_deaggregation}
+    Some providers offer data with granularity different from the needs of Axpo users.
+    
+    In this case it is necessary to either aggregate or deaggregate the data downloaded, before inserting it into the Data Warehouse.
+    
+    These processes present their own difficulties however.
+    
+    \paragraph{Aggregation}
+        The difficulty in aggregating is understanding which operation is more appropriate for each kind of data.
+        
+        Let's assume we want to aggregate into hourly data information provided every 15 minutes.
+        
+        Energy consumptions\footnote{
+            Energy consumption refers to the amount of electricity used in a given time range, expressed in MW.
+        }, for example, need to be summed, while temperature forecasts need to be averaged, since it would make no sense to sum them.
+        
+    \paragraph{Deaggregation}
+        Splitting aggregated data into a finer granularity presents additional problem to those of aggregating.
+        
+        For example, let's assume we want to know the hourly energy consumption for a given user.
+        If we have a single value for the whole day, it is not reasonable to divide that value by 24, since it is very unlikely the consumption has been constant during the whole day.
+        
+        In this case the correct operation is infer a consumption model from other available data and to assume this user will behave similarly.
+        Then the total value will be divided proportionately to the model.
+        
+        This is however a specific example, in general it is impossible to give a rule of thumb, since each case presents different properties and must be analyzed individually.
+        
+    \paragraph{Time shifts and time formats}
+        Choosing the correct operation is not the only problem however.
+        
+        Different time formats, such as gas day, and time shifts, caused by DST, make these operations even more complex.
+        
+        The first 6 hours (\textit{0-6am}) of a ``standard'' day are part of the previous gas day.
+        However, during DST, these hours become 7 (\textit{0-7am}), since gas days always have 24 hours, while standard days can have 23, 24 or 25 hours\footnote{
+            For more details, see sections \ref{section:dwh:gas_day} (Gas day) and \ref{section:dwh:dst} (DST).
+        }.
+        
+        In these cases more complex queries are required to obtain the correct data before applying aggregation or deaggregation operations.
+    
+\subsection{Different Update Frequencies}
+    Each provider updates data with its own frequency.
+    
+    Update frequencies vary greatly, ranging from hourly to monthly updates.
+    There are also some particular scenarios, for example a certain provider updates its data on Monday, either Tuesday or Wednesday (with no apparent discerning factors) and Friday.
+    
+    This causes issues when scheduling jobs, since it is necessary to schedule each job independently.
+    \begin{table}
+        \centering
+        \begin{tabular}{|l|l|}
+            \toprule
+            Session          & Scheduled Start           \\
+            \midrule
+            Daily A          & 0 30 13,14 ? * * *        \\
+            Daily B          & 0 30 8 * * ?              \\
+            Daily C          & 0 10 18 ? * * *           \\
+            Daily D          & 0 30 8,17 ? * * *         \\
+            Daily E          & 0 30 11 1,2,3,4,5 * ? *   \\
+            Intra-daily 1    & 0 30 15 ? * * *           \\
+            Intra-daily 2    & 0 0 17 ? * * *            \\
+            Intra-daily 3    & 0 30 8 ? * * *            \\
+            ...              & ...                       \\
+             \bottomrule
+        \end{tabular}
+        \caption{Jobs scheduled for a specific provider.}
+        \label{tab:gme_job_schedules}
+    \end{table}
+    
+    Table \ref{tab:gme_job_schedules} shows an example of jobs scheduled for a specific website providing market data.
+    All the start times are in \textit{crontab} notation\footnote{
+        The values indicate respectively seconds, minutes, hours, day of month, month, day of week and year.
+        For more information about \textit{crontab} notation, see \cite{bib:crontab:notation}.
+    }.
+    
+    Each one of these jobs executes multiple Databricks notebooks, each one downloading a specific data stream.

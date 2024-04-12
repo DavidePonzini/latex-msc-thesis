@@ -1,0 +1,14 @@
+The ETL process needs to load the transformed data on the Data Warehouse.
+
+Its design is done in parallel, by a different team, with the ETL process.
+The design process is responsible for the following actions:
+\begin{itemize}
+    \item Creating some tables onto which the ETL process will load the data \textit{as-is}.
+    
+    \item Creating a procedure for performing some operations on the data, such as remapping or adding constants.
+    
+    \item Loading the data onto the actual end-user tables, as well as checking if the data actually needs to be loaded.
+    \begin{itemize}
+        \item Some values may already be present if the ETL process for a given time range is executed multiple times, for example due to errors.
+    \end{itemize}
+\end{itemize}

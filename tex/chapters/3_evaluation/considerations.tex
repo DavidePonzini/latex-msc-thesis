@@ -1,0 +1,24 @@
+Moving from a complex structure of on-premise databases and tools is not an easy task.
+Many problems are encountered in each phase of the development, starting from understanding the various data sources needed to developing an appropriate structure.
+
+First of all, finding a suitable \textbf{workflow} is not an easy matter.
+As it has been described, the original workflow presented by Reply had several issues and limitations.
+A part of these problems have been solved by making some changes to the process, but a few still remain.
+For example, the history retrieval process is now tested more in depth before deployment of a Sprint.
+
+The \textbf{ETL process} also encountered many difficulties, caused by different factors.
+Each provider, for example, exposes data in different formats and requires specific data normalization operations.
+
+Testing the \textbf{quality of the data} is also a complex matter, since energy market data present domain-specific difficulties.
+For example, it is impossible to automatically assess the correctness of forecast values, since they are expected to change each time.\newline
+
+
+Even considering all these problems, we can see a great improvement in both \textbf{simplicity} and \textbf{performance}.
+
+The architecture has become more simple, since now all the data is stored on a centralized Data Warehouse, instead of multiple databases, each with its own insertion logic.
+As a consequence, most of the integration software previously used are no longer required.
+
+Performance is, however, the most important aspect, since it was the main cause for the migration.
+From the test results, we can notice a consistent reduction in query execution times, as long as the appropriate table structures are chosen.
+
+We can conclude by stating that migrating from an on-premise database to a Cloud-based architecture is a good choice, especially in terms of expected performance, although the process is very complex.

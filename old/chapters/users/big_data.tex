@@ -1,0 +1,90 @@
+The big data team focuses on analyzing data in order to support several business decisions.
+
+In my case, the big data team was involved in providing support to the portfolio management activities (described in section \ref{section:users:portfolio_management}).
+These activities help both the bidding processes and the portfolio optimization decisions.
+
+The former activity has the goal of helping placing more accurate bids, while the latter has the goal of choosing plants which have a more stable production, which in turn means having a more accurate prediction.
+    
+\subsection{Needs}
+    The big data team needs to use the data warehouse to predict the production of renewable energy plants (i.e. photo-voltaic and wind plants).
+    
+    Each power plant has to declare how much energy it will produce in advance.
+    If the amount declared is less than the energy actually produced, the company will face a fine.
+    
+    The main issue arises from the fact that renewable sources don't provide the same amount of energy every day, since their production depends on many factors.
+    For example, a wind farm doesn't produce any energy on a calm day and produces a lot of energy in a short amount of time if there is a particularly strong wind.
+    
+\subsection{Current situation}
+    \reword At the moment the business department is paying a lot of money in fines, since their predicted energy generation amount is much less than the actual production.
+    
+    The cause of this errors isn't the mathematical model used but the low quality of the data used to predict the outcome.
+    
+    The main issues related to data quality are:
+    \paragraph{Inconsistent plant names}
+        There is no quality assurance control when receiving plant names from providers.
+        These names are most likely input manually by clients, since we noticed they sometimes contain typos.
+        
+        For example a specific UP\footnote{\textit{Unità di produzione} (Production Unit). An UP is a plant which produces electric energy.}, called \textit{UP\_ParcoEolico\_1} was one time named \textit{UP\_ParcoElico\_1}.
+        
+        Table \ref{tab:sbil:up_names} shows some naming inconsistencies.
+        
+        \begin{table}
+            \centering
+            \begin{tabular}{|l|l|}
+                \toprule
+                Actual name         & Correct name      \\
+                \midrule
+                IM\_020****         & IM\_20****        \\
+                IM\_0S1****         & IM\_S1****        \\
+                \midrule
+                IM\_036****         & PVI\_036****\_001 \\
+                IM\_036****\_01     & PVI\_036****\_001 \\
+                \midrule
+                UP\_PARCOELICO\_1    & UP\_PARCOEOLICO\_1 \\
+                UP\_PARCOEOLICO\_1   & UP\_PARCOEOLICO\_1 \\
+                \bottomrule
+            \end{tabular}
+            \caption{Some UP naming inconsistencies}
+            \label{tab:sbil:up_names}
+        \end{table}
+
+    \paragraph{Different date conventions}
+        Each provider handles DST changes in a different way\footnote{For more information on DST changes and its related problems, see section \ref{etl:problems:dst}.}.
+        The main issues are that there are no normalization actions in-place and that all the different providers are stored in the same table.
+        
+        This causes a problem when extracting data from the table, since each provider needs \textit{ad hoc} logic in the query, which not only makes it harder to read, but also negatively impacts performance.
+        
+        As an example, a query needed to extract information from table containing data from two weather providers, which we will call \textit{Provider A} and \textit{Provider B}\footnote{The actual names of the providers are trade secrets and, as a consequence, cannot appear in this document.}.
+        However the two providers handled DST in different ways.
+        Upon further analysis, we discovered that even a single provider doesn't have a consistent approach across all years.
+        
+        In detail, we have:
+            \begin{itemize}
+                \item Lack of consistency across providers
+                \item Lack of consistency across all years of the same provider
+            \end{itemize}
+
+        For example, the day when DST\footnote{For more information about DST, see section \ref{etl:problems:dst}.} ends we are supposed to have 25 hours, since the hour between 2 and 3 a.m. is repeated twice.
+        
+        The data provided by \textit{Provider A} are ranged 1 to 25, which is what mathematical models expect, while \textit{Provider B} only provides 24 hours and discards the 25th.
+        In this case it is necessary to remap all the hours after 2 a.m., which is when the change occurred.
+        
+        The behavior of \textit{Provider B} isn't however consistent across all years, since we noticed that the data prior to 2017 have 25 hours.
+        As such it is important to take into account the year when deciding whether to remap the hours or not.
+        
+    \paragraph{Data scattering}
+        Currently the queries require data from several different sources.
+        
+        For example, a consistent number of information are extracted from \textit{Arkive1}, a custom tool which acts as a database, but has many more functionalities.
+        However, the data contained in \textit{Arkive1} come from a different  tool, \textit{Trimp}, which is a metering tool\footnote{A metering tool regularly receives values from energy meters and performs some basic operations on them depending on the meter type.
+        For example old meters send a cumulative count of how much energy has been consumed since the meter was installed, while newer models send only the amount consumed since the last reading.} developed by a third-party organization.\reword
+        
+        This high interaction between tools adds an additional layer of complexity to the system, negatively impacting both performance and ease of understanding.\reword
+        
+    \paragraph{Long execution times}
+        A consequence of operations required in queries to normalize the data, such as CASE WHEN, is that the queries take a long time to execute.
+        
+        For example, this happened to be a bottleneck when exporting a table from one db to another, as the transfer speed proved to be excessively low (it took more than half a day to copy less than half of a table).\reword
+
+\subsection{Expected situation}
+    \reword The goal of the data warehouse is to provide a higher level of data quality assurance, thus reducing the error on the predictions and improving query times, since it won't be necessary to perform cleaning operations inside the queries.

@@ -1,0 +1,11 @@
+After deployment, the Data Warehouse is empty and needs to be initialized.
+
+Initialization is done by invoking the apposite procedures previously developed.
+
+The process takes a long time to execute, usually a few hours per provider, but only needs to be executed once.
+
+% However, this phase has been proven to be vulnerable to unexpected errors.
+% For example, some providers have changed file structure a few years ago, which broke the history retrieval process for those data.
+
+% As a consequence, Reply decided to anticipate this phase during development, encountering and solving these errors before the deployment deadline.
+% After deployment this process will then be very likely to succeed without errors.

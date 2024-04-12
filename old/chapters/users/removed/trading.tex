@@ -1,0 +1,58 @@
+The main user of the data warehouse is the trading department.
+
+This department is in charge of managing energy sales and purchases.
+Their goal is to buy energy when its price is low and sell it when it's high.
+In order to do so they have developed several algorithms which help predicting the energy price in the future.
+
+\subsection{Roles}
+    The trading department is comprised of several members, each one with different tasks and needs.
+    
+    \paragraph{Traders}
+        Traders place bids on several energy markets, with the goal of earning money.
+        
+        Their decisions are based on the support provided by several algorithms, developed by data scientists.
+    \paragraph{Data scientists}
+        Data scientists are in charge of developing algorithms to assist the traders in their bidding process.
+        
+        They also need to identify which providers and data are needed for the algorithms.
+        
+        Data scientists were the users most involved in the data warehouse development process, since they had the most in-depth knowledge about providers.
+    \paragraph{Solution specialists}
+        Solution specialists work closely with data scientists.
+        They provide a more technical knowledge and insight into the development of the algorithms identified by the data scientists.
+        
+        They are responsible for both implementing the algorithms and making sure that all the processes are running as expected.
+
+\subsection{Needs}
+    \todousers{Trading: needs}
+\subsection{Current situation}
+    Before the creation of the data warehouse there several kinds of problems.
+    
+    \paragraph{Local machines}
+        Most algorithms were executed on local machines.
+        
+        This is a major problem, since the machine had to be up and running all the time.
+        If a machine happened to be down, the algorithm could not be executed, severely limiting the support provided to the traders and negatively impacting their decision making ability.
+    \paragraph{Data scattering}
+        The second issue is that the data needed by the algorithms was scattered on several different places, such as:
+        \begin{itemize}
+            \item Different databases
+            \item Custom downloaders, often executed locally
+            \item Custom tools, connected to their own databases, which often also performed some operations on data.
+        \end{itemize}
+    \paragraph{Data quality}
+        Regarding data quality there were two main issues.
+        
+        First of all, there was no system in place which guaranteed an acceptable level of data quality.
+        When bad quality data was received by the system, it was simply added to the database, impacting negatively the quality of the operations performed on it.
+        
+        The second problem is that of query inefficiency.
+        To solve the first problem, most queries where full of cleaning operations, such as \code{CASE ... WHEN ...}, which negatively impacted their performance, along with their readability.
+        
+\subsection{Expected situation}
+    \todousers{Trading: expected situation}
+    \begin{itemize}
+        \item data in one place (faster queries)
+        \item data quality operations in-place (no cleanup in queries (faster and more readable queries)
+        \item algorithms executed on the cloud (no more dependent on local machines) or on a dedicated local machine.
+    \end{itemize}

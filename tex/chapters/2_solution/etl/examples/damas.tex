@@ -1,0 +1,32 @@
+Damas\footnote{
+    Damas is a private web portal managed by Terna S.p.A.
+    It provides data related to energy transfers between Italy and bordering countries.
+    Information from this website are private, meaning that each company can only see their own energy transfers.
+} is an example of a website which requires complex navigation logic.
+
+The website offers a simple interface for selecting a time range and showing the data for that given range.
+However, this system presents two limitations.
+
+\paragraph{Limited date range}
+    First of all, the maximum date range allowed is 31 days.
+    If a user tries to perform a query on a bigger date range, the system shows an error message.
+    
+    This means that it is necessary to perform 12 queries to download a whole year.
+
+\paragraph{No DST}
+    The other problem is that if a date range contains a DST change, the website shows the following error message:
+
+    \begin{center}
+        \texttt{
+            One of the days in the interval BUSDAY(30.03.2019) and\\ BUSDAYTILL(31.03.2019) contains clock change days.
+        }
+    \end{center}
+    
+    As shown by the message, it is impossible to download even a small amount of days, if a DST change occurs between them.
+
+    The solution would be to download these dates individually, while downloading the rest of the data in ranges smaller than 31 days.
+    However, since each year has different dates for DST changes, it would be necessary to set up these date manually for each year in the downloader.
+    
+    In the end, the best solution, even though it's computationally less effective, is to download each day individually.
+    In this way there is no need to group dates into ranges and to pay attention to DST changes.
+    The download process, on the other hand, is slower than downloading data in a batch.

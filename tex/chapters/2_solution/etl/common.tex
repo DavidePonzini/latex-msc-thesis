@@ -1,0 +1,183 @@
+This section will provide a description of the main operations performed by the ETL process.
+An exhaustive list is not provided, since describing each operation of them would be extremely long and repetitive.
+
+\subsection{Extraction}
+    Most processes are executed daily, so the downloaders usually retrieve files only for the current day.
+    However the downloaders can also be easily configured to retrieve a range of dates, in case of history retrieval (which is only used to initialize the Data Warehouse).
+    
+    Each downloaded file is saved to the \texttt{rawdata} folder on DataLake \textit{as-is}.
+    
+    \subsubsection{Provider types} \label{section:etl:provider_types}
+        Different download techniques are used, depending on the kind of services exposed by a particular provider.
+        
+        \paragraph{FTP}
+            Several providers provide an FTP share, where they upload a few files each day, which contain the data for that given day.
+            
+            In this case the downloader just needs to connect to the FTP server and retrieve the files.
+            
+            Files stored here are usually either in \texttt{csv}, \texttt{xml} or \texttt{xls} format.
+            
+        \paragraph{API}
+            Other websites provide an API which can be queried for data.
+            
+            The resulting datasets are usually in \texttt{json} or \texttt{xml} format.
+            
+            In this case the downloader makes several calls to the API, each one with different parameters.
+            
+        \paragraph{SQL databases}
+            These providers provide the easiest interface, since it is possible to directly perform queries and extract the data in nearly any format.
+            
+            Since most of these providers are internal services owned by Axpo, their number is limited, compared to all the public providers.
+            
+        \paragraph{Web scraping}
+            Some websites do not expose their data through any particular service.
+            
+            In this case the only solution is to build a web scraper, which simulates human web navigation retrieving information manually.
+            
+            This approach is the most complex and time consuming, since it has to be build \textit{ad hoc} for the website.
+            Moreover, its re-usability across different websites is low, if non-existent, so it needs to be developed each time from scratch.
+        
+\subsection{Transformation}
+    Databricks retrieves the files saved on \texttt{rawdata} and performs some operations on them, before saving the resulting datasets in \texttt{.csv} format on the \texttt{srcdata} folder in DataLake.
+    
+    The most commonly executed operations are:
+        \begin{itemize}
+            \item Reading the dataset: depending on its format different methods are needed
+            \item Renaming columns
+            \item Dropping unneeded columns
+            \item Appending the file download date to each row, where not already present
+            \item Unpivoting the dataset, if needed
+            \item Normalizing column names
+        \end{itemize}
+        
+    \paragraph{Unpivoting}
+        A consistent number of datasets provide a value for each hour in a day in an apposite column.
+        
+        It is necessary to change the format, displaying on one column the hour and in another one the value.
+        This operation is called \textit{unpivoting} or \textit{melting}.
+        
+        \begin{table}
+            \centering
+            \begin{tabular}{|c|c c c c c|}
+                \toprule
+                 Zone  & H1 & H2 & H3 & ... & H25   \\
+                 \midrule
+                 North & 12 & 15 & 14 & ... & 0     \\
+                 South & 32 & 29 & 28 & ... & 0     \\
+                 \bottomrule
+            \end{tabular}
+            \quad
+            \begin{tabular}{|c|c c|}
+                \toprule
+                 Zone  & Hour  & Value   \\
+                 \midrule
+                 North & H1    & 12     \\
+                 North & H2    & 15     \\
+                 North & H3    & 14     \\
+                 North & ...   & ...    \\
+                 North & H25   & 0      \\
+                 South & H1    & 32     \\
+                 South & H2    & 29     \\
+                 South & H3    & 28     \\
+                 South & ...   & ...    \\
+                 South & H25   & 0      \\
+                 \bottomrule
+            \end{tabular}
+            \caption{Normal (left) and unpivoted (right) tables.}
+            \label{tab:etl:melt}
+        \end{table}
+        
+        Table \ref{tab:etl:melt} provides an example of unpivoting.
+        In the left table we have 26 columns, one representing the zone and a column for each hour\footnote{There are 25 hours to account for DST.}, while in the right table we have 3 columns: zone, hour and value.
+    
+    \paragraph{Column names normalization}
+        Some columns do not respect the naming convention decided for the Data Warehouse.
+        
+        Some columns may contain special characters or spaces, which cause problems when inserted into a database table.
+        
+        Several operations are performed to remove or replace these characters.
+        
+        For example, spaces and dashes are replaced with an underscore, parentheses of any type are removed and the character \code{\&} is replaced with its literal representation \code{and}. \\
+        Also, all names are converted into lowercase.
+            
+\subsection{Loading}
+    Databricks retrieves the files from \texttt{srcdata} and loads the data onto the Data Warehouse.
+    
+    The Data Warehouse, through several tables, views and procedures, performs some final operations on the data, before appending the new values onto the final tables.
+    
+    \subsubsection{Data Warehouse procedures}
+        The Data Warehouse contains three schemas:
+            \begin{itemize}
+                \item \texttt{src} \textit{(source)}
+                \item \texttt{stg} \textit{(staging)}
+                \item \texttt{dm}  \textit{(data mart)}
+            \end{itemize}
+        
+        \paragraph{\textit{Source} schema}    
+            Databricks loads the data directly into the \texttt{src} schema tables, without performing any operations in it.
+            
+            This schema contains a table for each flow, with the same structure as the \texttt{csv} file.
+            All values loaded in these tables are initially represented as strings but they are then casted to their actual data type through apposite views.
+            
+            These views are still located in the same schema, and there is a view for each table.
+            
+            Each time new data are inserted into those tables, the old values are erased.
+        
+        \paragraph{\textit{Staging} schema}
+            Through some stored procedures, the views present in the \texttt{src} schema are read and some additional operations are applied on the data.
+            
+            The result is then saved on some apposite tables stored under the \texttt{stg} schema.
+            
+            As with the \texttt{src} schema, when inserting into these tables, the previously existing data are erased.
+            
+            The most significative differences between the two schemas are the structure and the amount of tables.
+            
+            In the \texttt{src} schema, there are as many tables as flows and their structure is identical to the \texttt{csv} files stored on DataLake.
+            
+            The tables on the \texttt{stg} schema are, on the other hand, much less and resemble the structure of the final tables.
+            Moreover, flows from different providers are stored together in these tables.
+            
+            The operations performed by the stored procedures are in charge of changing the data structure, from the one used in the \texttt{csv} to the one needed by the final tables, and to add some constants: for example, if we have a \texttt{src} table containing information about \textit{MSD}, its provider will surely be \textit{GME}\footnote{
+                \textit{MSD} information are only provided by \textit{GME}.
+                For more details, see appendix \ref{section:providers:gme}.
+            }.
+            
+        \paragraph{\textit{Data Mart} schema}
+            This schema contains the final tables, which will be queried by the end-users.
+            
+            Through apposite stored procedures, the content of the \texttt{stg} tables are appended into the \texttt{dm} tables.
+            
+            These procedures pay special attention to checking if the values to be inserted are already present in the Data Warehouse and, if they are, they do not perform any action.
+            
+            This has been done to prevent duplicate data, which may be created by running more than once the ETL process (which may happen in case of errors).
+            
+    \subsubsection{Logging} \label{section:etl:logging}
+        All loading operations are traced to a log table, which is analyzed in case of alerts to understand when and how a process failed.
+        
+        \paragraph{Logging}
+            Logging is performed by invoking several stored procedures on the Data Warehouse, which write information to apposite tables.
+            These information contain:
+                \begin{itemize}
+                    \item The id of the process
+                    \item The provider name
+                    \item The data stream name for that given provider
+                    \item Two timestamps, for insertion and update respectively
+                    \item Some flags to indicate the operations already performed on the data
+                \end{itemize}
+            
+            Logs are written during each phase of the ETL process for each flow.
+        
+        \paragraph{Alerts}
+            Alerts are generated by a monitoring system set in Databricks.
+            Jobs can be set to send mails when a jobs starts, ends or fails.
+            
+            Upon job failure, Databricks sends a mail to specific users.
+            The mail contains a link to the cell which raised an error, along with the id of the process which failed.
+            
+            It is possible both to analyze the code and to query the database logging tables (using the id contained in the mail) to retrieve additional information.
+        
+        \paragraph{Monitoring tools}
+            Currently there are no tools actively monitoring the quality of the data present in the Data Warehouse apart from the alert system.
+            
+            This is done under the assumption that if the data are inserted into the Data Warehouse they are already of acceptable quality.
+            However, if some errors happen to elude the monitoring system, there is not currently any way to notice the problem.

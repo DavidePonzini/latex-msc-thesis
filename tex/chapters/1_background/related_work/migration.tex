@@ -1,0 +1,91 @@
+% one cloud provider or many?
+% switch to prod: all at once or a single component at a time?
+% https://blog.newrelic.com/engineering/cloud-migration-checklist/
+
+Before beginning a Cloud migration, it is important to take decisions with respect to several factors, which are going to influence the whole process.
+The most relevant are described in what follows.
+
+\subsection{Cloud Platform Choice}
+    The first choice is whether to use a single Cloud provider or to split the application across multiple providers.
+    Both choices have their own advantages and disadvantages \cite{bib:related_work:migration:10_steps}.
+    
+    \subsubsection{Single provider}
+        Using a single Cloud provider is relatively simple.
+        The development team needs to learn just one set of cloud APIs, and the application can take advantage of everything the chosen Cloud provider offers.
+
+        The downside to this approach is vendor lock in.
+        Moving the application to a different provider could require just as much effort as the original cloud migration.
+        Additionally, having a single cloud provider might negatively impact the company ability to negotiate important terms, such as pricing and SLAs\footnote{
+            \textit{Service Level Agreement}.
+             It is the minimum level of service that a carrier will deliver to the company per agreement.
+             When the service dips below that level, the company can open a repair ticket.
+        }, with the cloud provider.
+    
+    \subsubsection{Multiple providers}
+        Using multiple providers can provide several advantages, depending on the chosen model.
+        
+        \paragraph{Different applications on different Clouds}
+            The simplest approach is to run a set of applications in one Cloud provider and a different set in another.
+            This approach gives the company increased business leverage with multiple providers, as well as flexibility for where to put applications in the future.
+            Each application can also be optimized for the provider on which it runs.
+            
+        \paragraph{Same application on multiple Clouds}
+            A different approach consists of running some parts of a single application on one provider, and other parts on a different one.
+            
+            In this way, it is possible to effectively use the strengths of each provider.
+            Let's assume, for example, that \textit{Provider A} has better AI capabilities than the other providers, while \textit{Provider B} offers cheaper and more efficient storage.
+            A solution using this approach would store all data on \textit{Provider B}, and transfer only the information needed for AI models to \textit{Provider A}.
+            
+            There is, however, a risk tied to this approach.
+            The performance of the whole application depends on the performance of each provider, meaning that the slowest provider could become a bottleneck for the whole application.
+            
+            Similarly, downtime of a single provider could result in the whole application not working as intended.
+            
+        \paragraph{Cloud-agnostic applications}
+            A third possibility is building an application which can run on \textit{any} provider.
+            
+            There are multiple advantages, such as a higher flexibility when negotiating with providers, as well as the ability to run the same application on multiple providers at the same time.
+            The latter allows more dynamic workload balancing, since it is possible to easily shift work between different providers.
+            
+            The downside is the inability to use each of the strengths of each provider, reducing the benefits of hosting the application in the Cloud.
+            
+\subsection{Migration Techniques}
+    After having decided which and how many providers use, it is necessary to choose how to migrate the application to the Cloud.
+    
+    There are three main approaches, depending on the integration level of the application with the Cloud \cite{bib:related_work:migration:moving_to_cloud, bib:related_work:migration:10_steps}.
+    
+    \paragraph{Lift-and-shift}
+        The simplest and fastest approach is moving the application \textit{as-is} to the cloud.
+        
+        With this option, however, the application cannot benefit from each of the Cloud unique services, meaning that the improvements will be reduced.
+        
+    \paragraph{Lift-and-refit}
+        An improved version of the \textit{lift-and-shift} approach.
+    
+        After the application has been moved to the Cloud, some modifications are made where possible, enabling the application to leverage the strengths of the Cloud provider.
+        
+        The downsides are that this approach requires more time than \textit{lift-and-shift}, as well as in-depth knowledge of the application.
+        Moreover, there is also the risk of increasing the complexity of the application.
+        
+    \paragraph{Cloud native}
+        The best solution, although also the most time expensive, is to rebuild the application from scratch on the Cloud.
+        
+        In this way it is possible to use each of the Cloud features to the fullest, maximising both performance and readability.
+        
+        The downside is, however, the large amount of time needed to rewrite the whole application.
+        
+\subsection{Deployment}
+    The last important decision is how and when to switch over the production system from the legacy on-premise solution to the new cloud version.
+    
+    There are two possible solutions.
+    
+    \paragraph{All at once}
+        The switch is performed once the whole application has been successfully ported to the Cloud.
+        
+        All services are switched at the same moment from on-premise to Cloud.
+        
+    \paragraph{Incremental}
+        After each part of the application has been migrated, some users move their workload to the Cloud.
+        This process is then repeated until all users have successfully moved to the Cloud.
+        
+        For very large applications, this is the best solution, since it isn't necessary to wait for the whole migration to be complete (which could require years) before using it.

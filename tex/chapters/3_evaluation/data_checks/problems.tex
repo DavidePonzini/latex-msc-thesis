@@ -1,0 +1,94 @@
+Several problems have been encountered as a result of the tests carried out.
+After each problem has been solved, we executed the tests once again, obtaining better results.
+Perfect results have not been achieved yet, meaning that more problems need to identified and solved.
+The results obtained are however enough to show the effectiveness of the testing suite.
+
+This section will provide a description of the main problems identified.
+
+\subsection{Pivoting}
+    In some cases, tables on the on-premise database are pivoted differently than those on the Data Warehouse.
+    
+    If the company requires a specific output format the table on the Data Warehouse will be unpivoted accordingly, meaning that it will then be possible to run the tests on the new table.
+    On the other hand, if both formats are acceptable and no unpivoting operation is to be performed, it is impossible to execute Key and Value Tests, since the structures are too much different.
+    
+    In this case a few manual tests will be executed to assert at least a degree of correctness, even though a comprehensive testing suite has not been developed.
+
+\subsection{Forecast Publications} \label{section:tests:data:fct_publ}
+    Forecasts are very difficult to compare.
+    
+    The values downloaded from a provider are the results of a specific run of a certain algorithm.
+    Different runs usually give different results, since the input data is different.
+    Moreover, these algorithms are proprietary, so it isn't possible to investigate their behaviour.
+    
+    Forecasts are published multiple times a day.
+    Depending on when the data is downloaded, different values are obtained.
+    
+    The main problem arises from different download schedules between the on-premise tools and the ETL processes developed by Reply.
+    Different download schedules mean different values obtained, which invalidate most tests.
+    As a consequence, this kind of data can only be tested on download ranges.
+    Additional tests have to be performed by domain experts during real data application scenarios (i.e., running a tool with the new data and manually seeing how well it performs).
+    
+\subsection{Floating Points}
+    Floating point values present some limitations when performing comparisons.
+    This kind of data is by design approximate, meaning that it won't store the exact value but an approximation of it \cite{bib:tests:float_intersect}.
+    
+    This is not usually an issue, since the approximation is extremely close to the actual value, but it can present some problems when performing equality checks, since they are based on exact values.
+    In this case, values which may appear to be the same are considered different, resulting in wrong metrics.
+    
+    The solution is to convert all floating point values to the \code{DECIMAL} data type, which can support a specified number of decimal digits.
+    
+    Decimal data types are stored differently from floating points, the latter being based on a value multiplied by an exponent, while the former being just a plain representation of the number, with the possibility of specifying how many digit are decimal.
+    
+    Since decimal data types represent exactly all the digits in the number, operations such as equality checks and intersections (which internally rely on equality checks) can be performed without fear of getting wrong results.
+
+\subsection{Different Values}
+    In multiple cases, Key tests indicated a high consistency level but Value tests gave poor results.
+    
+    I analyzed each issue with the help of Reply and identified the proper solution.
+    A consistent number of problems was caused by operations applied on the data in the on-premise database.
+    These operations were specific to the type of data, so there wasn't a unique or common solution.
+    
+    For example, I notice that the quantities of energy transferred between different zones were different, although all the keys were correct.
+    This meant that the Data Warehouse contained the correct datum but with the wrong value, compared to the on-premise database.
+    
+    \paragraph{Website data}
+        The first check we did after having identified the problem was controlling that the values present on the website were identical to those stored in the Data Warehouse.
+        
+        The website had two different categories of data, named \textit{Day Ahead} and \textit{Total}.
+        The specifics given by Axpo indicated that the value to download was \textit{Total}.
+        
+        We compared these value with the results obtained from the Value test and noticed that the data in Data Warehouse was correct, while the on-premise database contained different numbers.
+    
+    \paragraph{Data operations}
+        After having identified this problem, I asked the Axpo specialist who used this kind of data if the local database performed some operations on the data.
+        It turned out that the quantities stored in the on-premise database were the net transferred amount and not the whole amount.
+        
+        Table \ref{tab:tests:data:operations} shows the difference between whole and net transfers amount.
+        In the first case, we record how much energy each zone has transferred, while in the second we only store the difference between the two values.
+        This behaviour has been replicated in the Value test.
+        
+        \begin{table}
+            \centering
+            \begin{tabular}{|c|c c c|}
+                \toprule
+                Amount                 & From & To & Quantity \\
+                \midrule
+                \multirow{2}{*}{Whole} & A    & B  & 100      \\
+                {}                     & B    & A  & 35       \\
+                \midrule
+                \multirow{2}{*}{Net}   & A    & B  & 65       \\
+                {}                     & B    & A  & 0        \\
+                \bottomrule
+            \end{tabular}
+            \caption{Whole vs net energy transfer amounts between zones.}
+            \label{tab:tests:data:operations}
+        \end{table}
+        
+        
+        
+    \paragraph{Different data stream}
+        Even with this normalization operations in place, the Value test was still indicating the presence of several errors.
+        
+        While comparing the newly computed results obtained from the test with the provider's website, we noticed that the values of the on-premise database matched the \textit{Day Ahead} column from the website.
+        
+        This problem has been presented to Axpo, and we understood it was necessary to change the initial requirements, adding this kind of data to the original planning.

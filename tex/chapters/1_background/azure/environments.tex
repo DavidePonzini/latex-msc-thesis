@@ -1,0 +1,21 @@
+We define as \textit{environment} a \texttt{resource group}, i.e. a collection of resources that can be managed together.
+
+We created two environments in order to answer to the different needs of the project.
+These environment are used respectively for development and production.
+
+All environments have the same tools and configuration, the only difference is how they are used.
+
+\paragraph{Development}
+    The development environment, nicknamed \textit{Toycase}, is where Reply develops new functionalities.
+    
+    This environment may contain work-in-progress scripts, along with some tests on functionalities or data.
+    Moreover, the data warehouse contains only a portion of the data needed by the algorithms, since the purpose of this environment is to test whether the downloader works.
+    
+\paragraph{Production}
+    The production environment is architecturally identical to the development environment, but it is actively used by end-users and their algorithms.
+    
+    This environment contains up to several years of data history for each provider and constantly downloads new information when scheduled.
+    
+    All the code on this environment must always work without errors.
+    To guarantee this, all the code has to be previously tested on the development environment.
+

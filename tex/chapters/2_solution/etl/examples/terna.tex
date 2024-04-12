@@ -1,0 +1,41 @@
+The website of Terna S.p.A.\footnote{
+    Terna S.p.A. is the most important Transmission System Operator in Italy.
+    It manages almost all of the Italian energy transmission grid.
+} is an example of technical problems which heavily influenced the extraction process.
+
+\paragraph{Premise}
+    Terna provides each day an Excel file containing several data.
+    An intuitive approach would be to download directly these files.
+    
+    However, due to the inconsistencies described in the next paragraph, it became necessary to navigate the website with a web scraper, which is far more complex to develop than a simple downloader.
+    
+\paragraph{Inconsistencies}
+    The main problem with the Terna website is that there isn't any naming convention for the Excel files.
+    
+    As we can see from Table \ref{tab:etl:terna:files}, files related the same data category for consecutive days have both very different names and different extensions.
+    Moreover, some files marked as \texttt{.xlsx} are actually just \texttt{.xls} with a wrong file extension.
+    
+    \begin{table}
+        \centering
+        \begin{tabular}{|c c c|}
+            \toprule
+            Date & Filename & Extension \\
+            \midrule
+            11/04/2019 & 73 & XLS  \\
+            10/04/2019 & 52 & XLSX \\
+            09/04/2019 & 31 & XLS  \\
+            08/04/2019 & 03 & XLS  \\
+            \bottomrule
+        \end{tabular}
+        \caption{
+            Filenames and extensions for files downloaded from \texttt{Terna.it}.
+            All files are related to the same category.
+        }
+        \label{tab:etl:terna:files}
+    \end{table}
+    
+  \paragraph{Web scraper}
+    Since it is impossible to predict which files to download, the only possible approach is to navigate the website and download the files manually or through a web scraper.
+    The downloader uses Selenium to navigate and interact with Terna website, and to retrieves the URLs of several \texttt{.xls} and \texttt{.xlsx} files, which will be downloaded by Databricks.
+    
+    This process is by far slower than a normal downloader, but allows us to bypass the filename issue.

@@ -1,0 +1,50 @@
+\subsection{ROLAP Schema}
+    \subsubsection{Description}
+        Views are just joins between fact and dimension tables, replacing ids with their textual representations, proving better readability.
+
+    \subsubsection{Dimensions}
+        \input{tex/notes/03/26_dimensions.tex}
+        
+    \subsubsection{Facts}
+        \input{tex/notes/03/26_facts.tex}
+        
+    \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{res/img/schema_db.jpg}
+        \caption{DB Schema. Circles represent dimensions; rectangles facts.}
+        \label{fig:db_schema}
+    \end{figure}
+    
+\subsection{Usage}
+    A \textit{Julia} script is run every 30 minutes with some default parameters.
+    Additionally, it can be manually launched from an Excel spreadsheet with custom-set parameters.
+    
+    \paragraph{Output} In case of a scheduled jobs the results are saved to the db, otherwise they are shown on the spreadsheet.
+    
+    \paragraph{Goal} The goal is to predict market prices for the following day, on different markets.
+    
+    \subsubsection{Workflow}
+    The script executes the following actions:
+    \begin{enumerate}
+        \item Data acquisition
+        \begin{itemize}
+            \item Curves
+            \item Realized flows
+            \item PTDF
+            \item Capacities
+            \item Block bids
+            \item Consumption FCT timeseries
+        \end{itemize}
+        
+        \item Consumption computations with ML
+        
+        \item Market model
+        \begin{itemize}
+            \item Requires all data previously produced
+            \item Produces market prices for the following day
+        \end{itemize}
+    \end{enumerate}
+    
+    The results are either saved to db or shown to the user.
+    
+    At 12.42 the stock market shows the official prices, which are used as input for the following day.
